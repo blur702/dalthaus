@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import LoginPage from './pages/LoginPage';
 import AdminDashboard from './pages/AdminDashboard';
 import CreateUserPage from './pages/CreateUserPage';
+import UserManagement from './modules/users/pages/UserManagement';
 import ProtectedRoute from './components/ProtectedRoute';
 
 function App() {
@@ -28,6 +29,14 @@ function App() {
           element={
             <ProtectedRoute isAuthenticated={isAuthenticated}>
               <CreateUserPage setIsAuthenticated={setIsAuthenticated} />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/admin/users" 
+          element={
+            <ProtectedRoute isAuthenticated={isAuthenticated}>
+              <UserManagement setIsAuthenticated={setIsAuthenticated} />
             </ProtectedRoute>
           } 
         />

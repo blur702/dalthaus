@@ -1,6 +1,6 @@
 import React from 'react';
 import AdminLayout from '../components/AdminLayout';
-import CreateUserForm from '../components/CreateUserForm';
+import CreateUserForm from '../modules/users/components/CreateUserForm';
 
 const CreateUserPage = ({ setIsAuthenticated }) => {
   return (
