@@ -15,7 +15,9 @@ const LoginPage = ({ setIsAuthenticated }) => {
     try {
       const response = await api.post('/auth/login', { username, password });
       
-      if (response.status === 200) {
+      if (response.data.token) {
+        // Store the token in localStorage
+        localStorage.setItem('token', response.data.token);
         setIsAuthenticated(true);
         navigate('/admin');
       }

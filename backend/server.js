@@ -5,6 +5,7 @@ const path = require('path');
 const sequelize = require('./src/config/database');
 const User = require('./src/models/user.model');
 const authRoutes = require('./src/routes/auth.routes');
+const userRoutes = require('./src/routes/user.routes');
 
 const app = express();
 const PORT = process.env.PORT || 5001;
@@ -15,6 +16,7 @@ app.use(cors());
 
 // API Routes
 app.use('/api/auth', authRoutes);
+app.use('/api/users', userRoutes);
 
 // Production deployment configuration
 if (process.env.NODE_ENV === 'production') {

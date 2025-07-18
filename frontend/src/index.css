@@ -101,3 +101,30 @@ body {
 .logout-button:hover {
   background-color: #d32f2f;
 }
+
+.create-user-card {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  max-width: 500px;
+  margin-top: 2rem;
+}
+
+.create-user-card h3 {
+  margin-top: 0;
+  margin-bottom: 1rem;
+  color: #333;
+}
+
+.success-message {
+  color: #4CAF50;
+  margin-top: 1rem;
+  font-weight: 500;
+}
+
+hr {
+  margin: 2rem 0;
+  border: none;
+  border-top: 1px solid #e0e0e0;
+}

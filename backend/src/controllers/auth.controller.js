@@ -1,5 +1,9 @@
 const bcryptjs = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 const User = require('../models/user.model');
+
+// It's best practice to store your secret in an environment variable
+const JWT_SECRET = process.env.JWT_SECRET || 'a-default-secret-key-for-dev';
 
 const login = async (req, res) => {
   try {
@@ -20,9 +24,17 @@ const login = async (req, res) => {
     if (!isPasswordValid) {
       return res.status(401).json({ error: 'Invalid credentials' });
     }
+
+    // Create a JWT
+    const token = jwt.sign(
+      { id: user.id, role: user.role },
+      JWT_SECRET,
+      { expiresIn: '1h' } // Token expires in 1 hour
+    );
     
     res.status(200).json({
       message: 'Login successful',
+      token: token, // Send the token to the client
       user: {
         id: user.id,
         username: user.username,
