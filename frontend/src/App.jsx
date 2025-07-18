@@ -7,6 +7,8 @@ import UserManagement from './modules/users/pages/UserManagement';
 import ArticleManagement from './modules/content/pages/ArticleManagement';
 import PageManagement from './modules/content/pages/PageManagement';
 import PhotoBookManagement from './modules/content/pages/PhotoBookManagement';
+import ContentPreview from './pages/ContentPreview';
+import TestPagebreak from './pages/TestPagebreak';
 import ProtectedRoute from './components/ProtectedRoute';
 
 function App() {
@@ -66,6 +68,14 @@ function App() {
               <PhotoBookManagement setIsAuthenticated={setIsAuthenticated} />
             </ProtectedRoute>
           } 
+        />
+        <Route 
+          path="/preview/:type/:id" 
+          element={<ContentPreview />} 
+        />
+        <Route 
+          path="/test-pagebreak" 
+          element={<TestPagebreak />} 
         />
         <Route path="/" element={<Navigate to="/login" replace />} />
       </Routes>

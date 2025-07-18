@@ -1,11 +1,20 @@
+require('dotenv').config(); // Load environment variables
+
 const express = require('express');
 const cors = require('cors');
 const bcryptjs = require('bcryptjs');
 const path = require('path');
 const sequelize = require('./src/config/database');
 const User = require('./src/models/user.model');
+
+// Import content models to register them
+require('./src/models/content');
+
 const authRoutes = require('./src/routes/auth.routes');
 const userRoutes = require('./src/routes/user.routes');
+const photoBookRoutes = require('./src/routes/content/photoBook.routes');
+const articleRoutes = require('./src/routes/content/article.routes');
+const pageRoutes = require('./src/routes/content/page.routes');
 
 const app = express();
 const PORT = process.env.PORT || 5001;
@@ -17,6 +26,9 @@ app.use(cors());
 // API Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
+app.use('/api/content/photo-books', photoBookRoutes);
+app.use('/api/content/articles', articleRoutes);
+app.use('/api/content/pages', pageRoutes);
 
 // Production deployment configuration
 if (process.env.NODE_ENV === 'production') {

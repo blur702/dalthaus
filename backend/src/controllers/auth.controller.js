@@ -25,11 +25,11 @@ const login = async (req, res) => {
       return res.status(401).json({ error: 'Invalid credentials' });
     }
 
-    // Create a JWT
+    // Create a JWT with no expiration for admin area
     const token = jwt.sign(
       { id: user.id, role: user.role },
-      JWT_SECRET,
-      { expiresIn: '1h' } // Token expires in 1 hour
+      JWT_SECRET
+      // No expiresIn option - token never expires
     );
     
     res.status(200).json({

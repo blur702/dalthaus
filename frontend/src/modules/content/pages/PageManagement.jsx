@@ -157,6 +157,13 @@ const PageManagement = ({ setIsAuthenticated }) => {
                       <td className="actions">
                         <button 
                           className="btn-icon" 
+                          onClick={() => window.open(`/preview/page/${page.id}`, '_blank')}
+                          title="Preview"
+                        >
+                          👁️
+                        </button>
+                        <button 
+                          className="btn-icon" 
                           onClick={() => handleEdit(page)}
                           title="Edit"
                         >
