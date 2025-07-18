@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import LoginPage from './pages/LoginPage';
 import AdminDashboard from './pages/AdminDashboard';
+import CreateUserPage from './pages/CreateUserPage';
 import ProtectedRoute from './components/ProtectedRoute';
 
 function App() {
@@ -19,6 +20,14 @@ function App() {
           element={
             <ProtectedRoute isAuthenticated={isAuthenticated}>
               <AdminDashboard setIsAuthenticated={setIsAuthenticated} />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/admin/users/create" 
+          element={
+            <ProtectedRoute isAuthenticated={isAuthenticated}>
+              <CreateUserPage setIsAuthenticated={setIsAuthenticated} />
             </ProtectedRoute>
           } 
         />
