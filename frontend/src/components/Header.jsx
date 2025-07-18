@@ -3,6 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 
 const Header = ({ setIsAuthenticated }) => {
   const [showUserMenu, setShowUserMenu] = useState(false);
+  const [showContentMenu, setShowContentMenu] = useState(false);
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -13,6 +14,12 @@ const Header = ({ setIsAuthenticated }) => {
 
   const toggleUserMenu = () => {
     setShowUserMenu(!showUserMenu);
+    setShowContentMenu(false);
+  };
+
+  const toggleContentMenu = () => {
+    setShowContentMenu(!showContentMenu);
+    setShowUserMenu(false);
   };
 
   return (
@@ -44,6 +51,33 @@ const Header = ({ setIsAuthenticated }) => {
                   <li>
                     <Link to="/admin/users" className="dropdown-link">
                       Manage Users
+                    </Link>
+                  </li>
+                </ul>
+              )}
+            </li>
+            <li className="nav-item dropdown">
+              <button 
+                className="nav-link dropdown-toggle"
+                onClick={toggleContentMenu}
+              >
+                Content
+              </button>
+              {showContentMenu && (
+                <ul className="dropdown-menu">
+                  <li>
+                    <Link to="/admin/content/articles" className="dropdown-link">
+                      Articles
+                    </Link>
+                  </li>
+                  <li>
+                    <Link to="/admin/content/pages" className="dropdown-link">
+                      Pages
+                    </Link>
+                  </li>
+                  <li>
+                    <Link to="/admin/content/photo-books" className="dropdown-link">
+                      Photo Books
                     </Link>
                   </li>
                 </ul>
