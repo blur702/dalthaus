@@ -1,11 +1,23 @@
 const { Sequelize } = require('sequelize');
+const fs = require('fs');
+const path = require('path');
 
+// Load configuration from external file
+const configPath = path.join('/var/www/config', 'database.json');
+const config = JSON.parse(fs.readFileSync(configPath, 'utf8'));
+
+// Determine environment
+const env = process.env.NODE_ENV || 'development';
+const dbConfig = config[env];
+
+// Create Sequelize instance with external config
 const sequelize = new Sequelize(
-  process.env.DB_NAME || 'admin_db',
-  process.env.DB_USER || 'kevin',
-  process.env.DB_PASSWORD || 'password',
+  dbConfig.database,
+  dbConfig.username,
+  dbConfig.password,
   {
-    host: process.env.DB_HOST || 'localhost',
+    host: dbConfig.host,
+    port: dbConfig.port,
     dialect: 'postgres',
     logging: false
   }
