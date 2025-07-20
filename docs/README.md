@@ -196,3 +196,24 @@ In production mode (`NODE_ENV=production`), the Express server serves the built 
    - Email notifications
    - Activity logging
    - Two-factor authentication
+
+## Additional Documentation
+
+- **[Playwright Testing](./playwright-testing.md)** - Automated test suite documentation
+- **[Pagebreak Feature Status](./pagebreak-feature-status.md)** - Current status of pagebreak functionality
+
+## Recent Updates
+
+### TinyMCE Integration
+- Rich text editor has been integrated for all content types
+- Pagebreak functionality allows splitting content into multiple pages
+- Visual indicators show pagebreaks in the editor
+
+### Playwright Test Suite
+- Comprehensive automated tests created in `/var/www/playwright-tests/`
+- Tests cover authentication, content management, and navigation
+- Pagebreak viewing functionality verified working
+
+### JWT Authentication Update
+- JWT tokens now persist without expiration for admin sessions
+- Token configuration updated to remove timeout

@@ -9,6 +9,8 @@ import PageManagement from './modules/content/pages/PageManagement';
 import PhotoBookManagement from './modules/content/pages/PhotoBookManagement';
 import ContentPreview from './pages/ContentPreview';
 import TestPagebreak from './pages/TestPagebreak';
+import PagebreakTest from './pages/PagebreakTest';
+import SimplePagebreakTest from './pages/SimplePagebreakTest';
 import ProtectedRoute from './components/ProtectedRoute';
 
 function App() {
@@ -76,6 +78,14 @@ function App() {
         <Route 
           path="/test-pagebreak" 
           element={<TestPagebreak />} 
+        />
+        <Route 
+          path="/pagebreak-test" 
+          element={<PagebreakTest />} 
+        />
+        <Route 
+          path="/simple-pagebreak-test" 
+          element={<SimplePagebreakTest />} 
         />
         <Route path="/" element={<Navigate to="/login" replace />} />
       </Routes>

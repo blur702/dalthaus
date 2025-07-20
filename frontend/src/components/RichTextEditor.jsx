@@ -24,7 +24,6 @@ import 'tinymce/plugins/fullscreen';
 import 'tinymce/plugins/insertdatetime';
 import 'tinymce/plugins/media';
 import 'tinymce/plugins/table';
-import 'tinymce/plugins/help';
 import 'tinymce/plugins/wordcount';
 import 'tinymce/plugins/pagebreak';
 
@@ -68,41 +67,95 @@ const RichTextEditor = ({ value, onChange, height = 500 }) => {
         plugins: [
           'advlist', 'autolink', 'lists', 'link', 'image', 'charmap', 'preview',
           'anchor', 'searchreplace', 'visualblocks', 'code', 'fullscreen',
-          'insertdatetime', 'media', 'table', 'help', 'wordcount', 'pagebreak'
+          'insertdatetime', 'media', 'table', 'wordcount', 'pagebreak'
         ],
         toolbar: 'undo redo | blocks | ' +
           'bold italic forecolor | alignleft aligncenter ' +
           'alignright alignjustify | bullist numlist outdent indent | ' +
-          'pagebreak | removeformat | help',
-        content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:14px } ' +
-          // Style for TinyMCE's default pagebreak
-          'div.mce-pagebreak, div[data-mce-type="pagebreak"] { ' +
-          'display: block !important; clear: both; width: 100%; height: 5px; ' +
-          'border: none; border-top: 2px dashed #999; margin: 20px 0; ' +
-          'page-break-before: always; position: relative; } ' +
-          // Add label to pagebreak
-          'div.mce-pagebreak::after, div[data-mce-type="pagebreak"]::after { ' +
-          'content: "PAGE BREAK"; position: absolute; left: 50%; top: -10px; ' +
-          'transform: translateX(-50%); background: #f8f8f8; padding: 2px 15px; ' +
-          'color: #666; font-size: 11px; font-weight: bold; border: 1px solid #ddd; ' +
-          'border-radius: 3px; font-family: sans-serif; } ' +
-          // Make pagebreak more visible on hover
-          'div.mce-pagebreak:hover, div[data-mce-type="pagebreak"]:hover { ' +
-          'border-top-color: #0066cc; cursor: not-allowed; } ' +
-          'div.mce-pagebreak:hover::after, div[data-mce-type="pagebreak"]:hover::after { ' +
-          'background: #e3f2fd; color: #0066cc; border-color: #0066cc; }',
+          'pagebreak | removeformat',
         pagebreak_separator: '<!-- pagebreak -->',
         pagebreak_split_block: true,
-        // Visual representation of page breaks in editor
+        content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:14px } ' +
+          // Style for ALL possible pagebreak implementations
+          '.mce-pagebreak, div.mce-pagebreak, img.mce-pagebreak, div[data-mce-pagebreak], hr.mce-pagebreak { ' +
+          'display: block !important; clear: both; width: 100% !important; ' +
+          'height: 40px !important; margin: 20px 0 !important; padding: 0 !important; ' +
+          'border: none !important; background: transparent !important; ' +
+          'position: relative !important; overflow: visible !important; ' +
+          'background-image: repeating-linear-gradient(90deg, #999 0, #999 10px, transparent 10px, transparent 20px) !important; ' +
+          'background-size: 100% 2px !important; background-position: center center !important; ' +
+          'background-repeat: no-repeat !important; } ' +
+          // Add visible label
+          '.mce-pagebreak::before, div.mce-pagebreak::before, img.mce-pagebreak::before, div[data-mce-pagebreak]::before, hr.mce-pagebreak::before { ' +
+          'content: "PAGE BREAK" !important; position: absolute !important; ' +
+          'left: 50% !important; top: 50% !important; transform: translate(-50%, -50%) !important; ' +
+          'background: white !important; padding: 5px 20px !important; ' +
+          'color: #666 !important; font-size: 12px !important; font-weight: bold !important; ' +
+          'border: 2px solid #999 !important; border-radius: 4px !important; ' +
+          'font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important; ' +
+          'z-index: 1 !important; } ' +
+          // Hover effect
+          '.mce-pagebreak:hover, div.mce-pagebreak:hover, img.mce-pagebreak:hover, div[data-mce-pagebreak]:hover, hr.mce-pagebreak:hover { ' +
+          'background-image: repeating-linear-gradient(90deg, #0066cc 0, #0066cc 10px, transparent 10px, transparent 20px) !important; } ' +
+          '.mce-pagebreak:hover::before, div.mce-pagebreak:hover::before, img.mce-pagebreak:hover::before, div[data-mce-pagebreak]:hover::before, hr.mce-pagebreak:hover::before { ' +
+          'background: #e3f2fd !important; color: #0066cc !important; border-color: #0066cc !important; }',
+        // Visual representation in editor
         visual: true,
         visualblocks_default_state: false,
         // Self-hosted configuration
         base_url: '/tinymce',
         suffix: '.min',
-        // Make pagebreaks visible and non-editable
-        noneditable_noneditable_class: 'mce-pagebreak',
-        // Extended valid elements to include pagebreak
-        extended_valid_elements: 'div[class|data-mce-type|contenteditable]'
+        // Extended valid elements to include our custom pagebreak
+        extended_valid_elements: 'div[class|style|contenteditable|data-mce-resize],p',
+        valid_children: '+body[div],+div[div]',
+        // Allow our custom styles
+        valid_styles: {
+          '*': 'display,width,height,margin,position,user-select,background,left,right,top,transform,padding,border,border-radius,color,font-size,font-weight,font-family'
+        },
+        // Setup function for pagebreak handling
+        setup: (editor) => {
+          
+          // When editor initializes
+          editor.on('init', () => {
+            // Add enhanced styles for the pagebreak plugin
+            const style = editor.dom.create('style');
+            style.innerHTML = `
+              /* Style the TinyMCE pagebreak plugin element */
+              .mce-pagebreak {
+                display: block !important;
+                width: 100% !important;
+                height: 5px !important;
+                margin: 20px 0 !important;
+                background: repeating-linear-gradient(
+                  90deg,
+                  #999 0,
+                  #999 10px,
+                  transparent 10px,
+                  transparent 20px
+                ) !important;
+                border: none !important;
+                clear: both !important;
+                cursor: default !important;
+                page-break-before: always !important;
+              }
+              
+              /* Print styles */
+              @media print {
+                .mce-pagebreak {
+                  display: block !important;
+                  page-break-before: always !important;
+                  page-break-after: auto !important;
+                  break-before: page !important;
+                  height: 0 !important;
+                  margin: 0 !important;
+                  border: none !important;
+                  background: none !important;
+                }
+              }
+            `;
+            editor.getDoc().getElementsByTagName('head')[0].appendChild(style);
+          });
+        }
       }}
     />
   );

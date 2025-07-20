@@ -1129,3 +1129,44 @@ hr {
   padding-top: 2rem;
   border-top: 1px solid #e0e0e0;
 }
+
+/* Print-specific styles for pagebreaks */
+@media print {
+  /* Hide pagination controls when printing */
+  .content-pagination {
+    display: none !important;
+  }
+  
+  /* Ensure pagebreaks work correctly */
+  .mce-pagebreak,
+  img.mce-pagebreak,
+  hr.mce-pagebreak,
+  div.mce-pagebreak {
+    display: block !important;
+    page-break-before: always !important;
+    page-break-after: auto !important;
+    break-before: page !important;
+    break-after: auto !important;
+    height: 0 !important;
+    margin: 0 !important;
+    border: none !important;
+    background: none !important;
+  }
+  
+  /* Handle the HTML comment pagebreaks */
+  .content-display {
+    page-break-inside: auto !important;
+  }
+  
+  /* Ensure proper page breaks for content sections */
+  .content-display > * {
+    page-break-inside: avoid !important;
+  }
+  
+  /* Force page break at pagebreak markers */
+  .pagebreak,
+  [data-pagebreak] {
+    page-break-before: always !important;
+    break-before: page !important;
+  }
+}
