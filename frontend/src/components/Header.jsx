@@ -4,6 +4,7 @@ import { useNavigate, Link } from 'react-router-dom';
 const Header = ({ setIsAuthenticated }) => {
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [showContentMenu, setShowContentMenu] = useState(false);
+  const [showSettingsMenu, setShowSettingsMenu] = useState(false);
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -15,11 +16,19 @@ const Header = ({ setIsAuthenticated }) => {
   const toggleUserMenu = () => {
     setShowUserMenu(!showUserMenu);
     setShowContentMenu(false);
+    setShowSettingsMenu(false);
   };
 
   const toggleContentMenu = () => {
     setShowContentMenu(!showContentMenu);
     setShowUserMenu(false);
+    setShowSettingsMenu(false);
+  };
+
+  const toggleSettingsMenu = () => {
+    setShowSettingsMenu(!showSettingsMenu);
+    setShowUserMenu(false);
+    setShowContentMenu(false);
   };
 
   return (
@@ -78,6 +87,23 @@ const Header = ({ setIsAuthenticated }) => {
                   <li>
                     <Link to="/admin/content/photo-books" className="dropdown-link">
                       Photo Books
+                    </Link>
+                  </li>
+                </ul>
+              )}
+            </li>
+            <li className="nav-item dropdown">
+              <button 
+                className="nav-link dropdown-toggle"
+                onClick={toggleSettingsMenu}
+              >
+                Settings
+              </button>
+              {showSettingsMenu && (
+                <ul className="dropdown-menu">
+                  <li>
+                    <Link to="/admin/settings/tinymce" className="dropdown-link">
+                      TinyMCE Editor
                     </Link>
                   </li>
                 </ul>

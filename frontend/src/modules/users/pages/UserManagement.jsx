@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import AdminLayout from '../../../components/AdminLayout';
 import UserList from '../components/UserList';
 import UserModal from '../components/UserModal';
@@ -12,9 +12,17 @@ const UserManagement = ({ setIsAuthenticated }) => {
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
   const [deleteConfirm, setDeleteConfirm] = useState(null);
+  const timeoutRef = useRef(null);
 
   useEffect(() => {
     loadUsers();
+    
+    // Cleanup function
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+    };
   }, []);
 
   const loadUsers = async () => {
@@ -52,7 +60,7 @@ const UserManagement = ({ setIsAuthenticated }) => {
       setSuccessMessage(`User ${deleteConfirm.username} deleted successfully`);
       setDeleteConfirm(null);
       loadUsers();
-      setTimeout(() => setSuccessMessage(''), 3000);
+      timeoutRef.current = setTimeout(() => setSuccessMessage(''), 3000);
     } catch (err) {
       setError(err.message || 'Failed to delete user');
     }
@@ -72,7 +80,7 @@ const UserManagement = ({ setIsAuthenticated }) => {
       
       setModalOpen(false);
       loadUsers();
-      setTimeout(() => setSuccessMessage(''), 3000);
+      timeoutRef.current = setTimeout(() => setSuccessMessage(''), 3000);
     } catch (err) {
       setError(err.message || 'Failed to save user');
     }

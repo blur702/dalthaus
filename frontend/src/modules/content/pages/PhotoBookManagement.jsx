@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import AdminLayout from '../../../components/AdminLayout';
 import ContentEditor from '../components/ContentEditor';
 import { photoBookService } from '../services/contentService';
@@ -10,9 +10,17 @@ const PhotoBookManagement = ({ setIsAuthenticated }) => {
   const [successMessage, setSuccessMessage] = useState('');
   const [showEditor, setShowEditor] = useState(false);
   const [selectedPhotoBook, setSelectedPhotoBook] = useState(null);
+  const timeoutRef = useRef(null);
 
   useEffect(() => {
     loadPhotoBooks();
+    
+    // Cleanup function to clear timeout on unmount
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+    };
   }, []);
 
   const loadPhotoBooks = async () => {
@@ -50,7 +58,14 @@ const PhotoBookManagement = ({ setIsAuthenticated }) => {
       
       setShowEditor(false);
       loadPhotoBooks();
-      setTimeout(() => setSuccessMessage(''), 3000);
+      
+      // Clear any existing timeout
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+      
+      // Set new timeout
+      timeoutRef.current = setTimeout(() => setSuccessMessage(''), 3000);
     } catch (err) {
       setError(err.message || 'Failed to save photo book');
     }
@@ -62,7 +77,14 @@ const PhotoBookManagement = ({ setIsAuthenticated }) => {
         await photoBookService.delete(photoBook.id);
         setSuccessMessage('Photo book deleted successfully');
         loadPhotoBooks();
-        setTimeout(() => setSuccessMessage(''), 3000);
+        
+        // Clear any existing timeout
+        if (timeoutRef.current) {
+          clearTimeout(timeoutRef.current);
+        }
+        
+        // Set new timeout
+        timeoutRef.current = setTimeout(() => setSuccessMessage(''), 3000);
       } catch (err) {
         setError(err.message || 'Failed to delete photo book');
       }
@@ -172,6 +194,15 @@ const PhotoBookManagement = ({ setIsAuthenticated }) => {
                         >
                           👁️
                         </button>
+                        {photoBook.status === 'published' && (
+                          <button 
+                            className="btn-icon" 
+                            onClick={() => window.open(`http://localhost:3000/photobook.html?slug=${photoBook.slug}`, '_blank')}
+                            title="View on public site"
+                          >
+                            🌐
+                          </button>
+                        )}
                         <button 
                           className="btn-icon" 
                           onClick={() => handleEdit(photoBook)}

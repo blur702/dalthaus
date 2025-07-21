@@ -1,0 +1,69 @@
+{
+  "timestamp": "2025-07-20T05:52:16.253Z",
+  "totalTests": 9,
+  "passed": 0,
+  "failed": 9,
+  "errors": [
+    "Request Failed: http://localhost:5174/login - net::ERR_CONNECTION_REFUSED",
+    "Request Failed: http://localhost:5174/admin/users - net::ERR_CONNECTION_REFUSED",
+    "Request Failed: http://localhost:5174/admin/content/articles - net::ERR_CONNECTION_REFUSED",
+    "Request Failed: http://localhost:5174/admin/content/articles - net::ERR_CONNECTION_REFUSED",
+    "Request Failed: http://localhost:5174/admin - net::ERR_CONNECTION_REFUSED"
+  ],
+  "results": [
+    {
+      "testName": "Authentication test suite",
+      "status": "FAIL",
+      "details": "page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:5174/login\nCall log:\n\u001b[2m  - navigating to \"http://localhost:5174/login\", waiting until \"load\"\u001b[22m\n",
+      "timestamp": "2025-07-20T05:50:13.081Z"
+    },
+    {
+      "testName": "User management test suite",
+      "status": "FAIL",
+      "details": "page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:5174/admin/users\nCall log:\n\u001b[2m  - navigating to \"http://localhost:5174/admin/users\", waiting until \"load\"\u001b[22m\n",
+      "timestamp": "2025-07-20T05:50:13.332Z"
+    },
+    {
+      "testName": "articles test suite",
+      "status": "FAIL",
+      "details": "page.click: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('button:has-text(\"Content\")')\u001b[22m\n",
+      "timestamp": "2025-07-20T05:50:43.952Z"
+    },
+    {
+      "testName": "pages test suite",
+      "status": "FAIL",
+      "details": "page.click: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('button:has-text(\"Content\")')\u001b[22m\n",
+      "timestamp": "2025-07-20T05:51:14.551Z"
+    },
+    {
+      "testName": "photo-books test suite",
+      "status": "FAIL",
+      "details": "page.click: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('button:has-text(\"Content\")')\u001b[22m\n",
+      "timestamp": "2025-07-20T05:51:45.138Z"
+    },
+    {
+      "testName": "TinyMCE settings test suite",
+      "status": "FAIL",
+      "details": "page.click: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('button:has-text(\"Settings\")')\u001b[22m\n",
+      "timestamp": "2025-07-20T05:52:15.734Z"
+    },
+    {
+      "testName": "Document upload test suite",
+      "status": "FAIL",
+      "details": "page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:5174/admin/content/articles\nCall log:\n\u001b[2m  - navigating to \"http://localhost:5174/admin/content/articles\", waiting until \"load\"\u001b[22m\n",
+      "timestamp": "2025-07-20T05:52:15.884Z"
+    },
+    {
+      "testName": "Edge cases test suite",
+      "status": "FAIL",
+      "details": "page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:5174/admin/content/articles\nCall log:\n\u001b[2m  - navigating to \"http://localhost:5174/admin/content/articles\", waiting until \"load\"\u001b[22m\n",
+      "timestamp": "2025-07-20T05:52:16.069Z"
+    },
+    {
+      "testName": "Performance test suite",
+      "status": "FAIL",
+      "details": "page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:5174/admin\nCall log:\n\u001b[2m  - navigating to \"http://localhost:5174/admin\", waiting until \"load\"\u001b[22m\n",
+      "timestamp": "2025-07-20T05:52:16.253Z"
+    }
+  ]
+}

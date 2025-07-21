@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import AdminLayout from '../../../components/AdminLayout';
 import ContentEditor from '../components/ContentEditor';
 import { articleService } from '../services/contentService';
@@ -10,9 +10,17 @@ const ArticleManagement = ({ setIsAuthenticated }) => {
   const [successMessage, setSuccessMessage] = useState('');
   const [showEditor, setShowEditor] = useState(false);
   const [selectedArticle, setSelectedArticle] = useState(null);
+  const timeoutRef = useRef(null);
 
   useEffect(() => {
     loadArticles();
+    
+    // Cleanup function to clear timeout on unmount
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+    };
   }, []);
 
   const loadArticles = async () => {
@@ -50,7 +58,14 @@ const ArticleManagement = ({ setIsAuthenticated }) => {
       
       setShowEditor(false);
       loadArticles();
-      setTimeout(() => setSuccessMessage(''), 3000);
+      
+      // Clear any existing timeout
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+      
+      // Set new timeout
+      timeoutRef.current = setTimeout(() => setSuccessMessage(''), 3000);
     } catch (err) {
       setError(err.message || 'Failed to save article');
     }
@@ -62,7 +77,14 @@ const ArticleManagement = ({ setIsAuthenticated }) => {
         await articleService.delete(article.id);
         setSuccessMessage('Article deleted successfully');
         loadArticles();
-        setTimeout(() => setSuccessMessage(''), 3000);
+        
+        // Clear any existing timeout
+        if (timeoutRef.current) {
+          clearTimeout(timeoutRef.current);
+        }
+        
+        // Set new timeout
+        timeoutRef.current = setTimeout(() => setSuccessMessage(''), 3000);
       } catch (err) {
         setError(err.message || 'Failed to delete article');
       }
@@ -149,6 +171,15 @@ const ArticleManagement = ({ setIsAuthenticated }) => {
                         >
                           Preview
                         </button>
+                        {article.status === 'published' && (
+                          <button
+                            className="btn-view"
+                            onClick={() => window.open(`http://localhost:3000/article.html?slug=${article.slug}`, '_blank')}
+                            title="View on public site"
+                          >
+                            View on Site
+                          </button>
+                        )}
                         <button
                           className="btn-edit"
                           onClick={() => handleEdit(article)}

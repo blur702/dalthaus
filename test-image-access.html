@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Image Access Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .test-image { border: 2px solid #ccc; margin: 10px 0; padding: 10px; }
+        img { max-width: 300px; display: block; }
+        .status { margin: 10px 0; }
+        .success { color: green; }
+        .error { color: red; }
+    </style>
+</head>
+<body>
+    <h1>Image Access Test</h1>
+    
+    <div class="test-image">
+        <h3>Test 1: Direct Image URL</h3>
+        <img id="img1" src="/media/odt_image_image_0a681fb6.jpeg" alt="Test Image 1">
+        <div class="status" id="status1"></div>
+    </div>
+    
+    <div class="test-image">
+        <h3>Test 2: Absolute URL</h3>
+        <img id="img2" src="http://localhost:5173/media/odt_image_image_0a681fb6.jpeg" alt="Test Image 2">
+        <div class="status" id="status2"></div>
+    </div>
+    
+    <div class="test-image">
+        <h3>Test 3: Dynamic Load</h3>
+        <div id="dynamic-container"></div>
+        <button onclick="loadDynamicImage()">Load Image Dynamically</button>
+        <div class="status" id="status3"></div>
+    </div>
+    
+    <div class="test-image">
+        <h3>Test 4: Fetch Test</h3>
+        <button onclick="testFetch()">Test Fetch API</button>
+        <div class="status" id="status4"></div>
+    </div>
+
+    <script>
+        // Check image loading
+        document.getElementById('img1').onload = function() {
+            document.getElementById('status1').className = 'status success';
+            document.getElementById('status1').textContent = '✅ Image loaded successfully';
+        };
+        document.getElementById('img1').onerror = function() {
+            document.getElementById('status1').className = 'status error';
+            document.getElementById('status1').textContent = '❌ Failed to load image';
+        };
+        
+        document.getElementById('img2').onload = function() {
+            document.getElementById('status2').className = 'status success';
+            document.getElementById('status2').textContent = '✅ Image loaded successfully';
+        };
+        document.getElementById('img2').onerror = function() {
+            document.getElementById('status2').className = 'status error';
+            document.getElementById('status2').textContent = '❌ Failed to load image';
+        };
+        
+        function loadDynamicImage() {
+            const container = document.getElementById('dynamic-container');
+            container.innerHTML = '<img src="http://localhost:5173/media/odt_image_image_0a681fb6.jpeg" alt="Dynamic Image">';
+            const img = container.querySelector('img');
+            img.onload = function() {
+                document.getElementById('status3').className = 'status success';
+                document.getElementById('status3').textContent = '✅ Dynamic image loaded';
+            };
+            img.onerror = function() {
+                document.getElementById('status3').className = 'status error';
+                document.getElementById('status3').textContent = '❌ Dynamic image failed';
+            };
+        }
+        
+        async function testFetch() {
+            try {
+                const response = await fetch('http://localhost:5173/media/odt_image_image_0a681fb6.jpeg');
+                const status = document.getElementById('status4');
+                if (response.ok) {
+                    status.className = 'status success';
+                    status.textContent = `✅ Fetch successful: ${response.status} ${response.headers.get('content-type')}`;
+                } else {
+                    status.className = 'status error';
+                    status.textContent = `❌ Fetch failed: ${response.status}`;
+                }
+            } catch (error) {
+                document.getElementById('status4').className = 'status error';
+                document.getElementById('status4').textContent = `❌ Fetch error: ${error.message}`;
+            }
+        }
+    </script>
+</body>
+</html>

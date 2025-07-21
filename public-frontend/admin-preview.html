@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Preview Mode</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+        .admin-bar {
+            background: #333;
+            color: white;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 9999;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+        }
+        .admin-bar h3 {
+            margin: 0;
+            font-size: 16px;
+        }
+        .admin-bar button {
+            background: #d9534f;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .admin-bar button:hover {
+            background: #c9302c;
+        }
+        #public-site {
+            margin-top: 50px;
+            width: 100%;
+            height: calc(100vh - 50px);
+            border: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-bar">
+        <h3>👁️ Admin Preview Mode - Edit links are visible</h3>
+        <button onclick="window.close()">Close Preview</button>
+    </div>
+    <iframe id="public-site" src="http://localhost:3000"></iframe>
+    
+    <script>
+        // Enable edit mode in iframe
+        window.addEventListener('load', function() {
+            // Set a flag that the iframe can check
+            localStorage.setItem('adminPreviewMode', 'true');
+            
+            // Try to communicate with iframe
+            const iframe = document.getElementById('public-site');
+            iframe.onload = function() {
+                try {
+                    // This might fail due to CORS, but worth trying
+                    iframe.contentWindow.postMessage({adminMode: true}, '*');
+                } catch (e) {
+                    console.log('Cross-origin communication blocked');
+                }
+            };
+        });
+        
+        // Clean up when closing
+        window.addEventListener('beforeunload', function() {
+            localStorage.removeItem('adminPreviewMode');
+        });
+    </script>
+</body>
+</html>

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import RichTextEditor from '../../../components/RichTextEditor';
+import DocumentUpload from '../../../components/DocumentUpload';
 
 const ContentEditor = ({ content, contentType, onSave, onCancel }) => {
   const [formData, setFormData] = useState({
@@ -7,6 +8,7 @@ const ContentEditor = ({ content, contentType, onSave, onCancel }) => {
     slug: '',
     body: '',
     status: 'draft',
+    coverImageUrl: '',
     // Article specific
     excerpt: '',
     category: '',
@@ -90,12 +92,51 @@ const ContentEditor = ({ content, contentType, onSave, onCancel }) => {
     return Object.keys(newErrors).length === 0;
   };
 
+  const handleCoverImageUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append('image', file);
+
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch('http://localhost:5001/api/upload/image', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        },
+        body: formData
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        // Keep the path as returned by the server
+        const imageUrl = data.url;
+        setFormData(prev => ({ ...prev, coverImageUrl: imageUrl }));
+        console.log('Image uploaded successfully:', imageUrl);
+      } else {
+        console.error('Upload failed:', response.status);
+        const errorData = await response.text();
+        console.error('Error details:', errorData);
+        alert('Failed to upload image. Please try again.');
+      }
+    } catch (error) {
+      console.error('Upload error:', error);
+      alert('Failed to upload image. Please try again.');
+    }
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
     
     if (validateForm()) {
       // Filter out fields not relevant to the content type
       const dataToSave = { ...formData };
+      
+      // Debug log
+      console.log('Submitting form data:', dataToSave);
+      console.log('Cover Image URL:', dataToSave.coverImageUrl);
       
       if (contentType === 'article') {
         delete dataToSave.template;
@@ -111,6 +152,8 @@ const ContentEditor = ({ content, contentType, onSave, onCancel }) => {
         delete dataToSave.featuredImage;
         delete dataToSave.coverImage;
         delete dataToSave.photoCount;
+        // Pages might not support coverImageUrl
+        delete dataToSave.coverImageUrl;
       } else if (contentType === 'photoBook') {
         delete dataToSave.excerpt;
         delete dataToSave.category;
@@ -122,6 +165,7 @@ const ContentEditor = ({ content, contentType, onSave, onCancel }) => {
         delete dataToSave.showInMenu;
       }
       
+      console.log('Data being saved:', dataToSave);
       onSave(dataToSave);
     }
   };
@@ -159,6 +203,63 @@ const ContentEditor = ({ content, contentType, onSave, onCancel }) => {
           />
         </div>
       </div>
+
+      {(contentType === 'article' || contentType === 'photoBook') && (
+        <div className="form-group">
+          <label htmlFor="coverImageUrl">Cover Image</label>
+          <div className="image-upload-container">
+            <input
+              type="text"
+              id="coverImageUrl"
+              name="coverImageUrl"
+              value={formData.coverImageUrl}
+              onChange={handleChange}
+              placeholder="https://example.com/image.jpg"
+              style={{ marginBottom: '10px' }}
+            />
+            <div className="upload-controls">
+              <input
+                type="file"
+                id="coverImageFile"
+                accept="image/*"
+                onChange={handleCoverImageUpload}
+                style={{ display: 'none' }}
+              />
+              <button
+                type="button"
+                onClick={() => document.getElementById('coverImageFile').click()}
+                className="btn-upload"
+                style={{ marginRight: '10px' }}
+              >
+                Upload Image
+              </button>
+              {formData.coverImageUrl && (
+                <button
+                  type="button"
+                  onClick={() => setFormData(prev => ({ ...prev, coverImageUrl: '' }))}
+                  className="btn-remove"
+                >
+                  Remove
+                </button>
+              )}
+            </div>
+            {formData.coverImageUrl && (
+              <div className="image-preview" style={{ marginTop: '10px', padding: '10px', backgroundColor: '#f5f5f5', borderRadius: '4px' }}>
+                <p style={{ marginBottom: '5px', fontSize: '14px', color: '#666' }}>Preview:</p>
+                <img 
+                  src={formData.coverImageUrl.startsWith('http') ? formData.coverImageUrl : `${window.location.origin}${formData.coverImageUrl}`} 
+                  alt="Cover preview" 
+                  style={{ maxWidth: '200px', maxHeight: '150px', objectFit: 'cover', border: '1px solid #ddd', display: 'block' }}
+                  onError={(e) => { 
+                    console.error('Preview image failed to load:', formData.coverImageUrl);
+                    e.target.style.display = 'none'; 
+                  }}
+                />
+              </div>
+            )}
+          </div>
+        </div>
+      )}
 
       {contentType === 'article' && (
         <>
@@ -290,6 +391,19 @@ const ContentEditor = ({ content, contentType, onSave, onCancel }) => {
 
       <div className="form-group">
         <label htmlFor="body">Content *</label>
+        <DocumentUpload
+          onContentLoaded={(htmlContent) => {
+            // Append the converted content to existing content
+            setFormData(prev => ({ 
+              ...prev, 
+              body: prev.body + htmlContent 
+            }));
+          }}
+          allowedTags={['p', 'br', 'span', 'div', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
+            'ul', 'ol', 'li', 'strong', 'b', 'em', 'i', 'u', 's', 'strike',
+            'a', 'img', 'blockquote', 'code', 'pre', 'table', 'thead', 'tbody',
+            'tfoot', 'tr', 'td', 'th', 'caption', 'sup', 'sub', 'hr']}
+        />
         <RichTextEditor
           value={formData.body}
           onChange={(content) => setFormData(prev => ({ ...prev, body: content }))}

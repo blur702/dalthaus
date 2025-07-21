@@ -36,7 +36,7 @@ import 'tinymce/skins/ui/oxide/skin.css';
 // Import content CSS
 import 'tinymce/skins/content/default/content.css';
 
-const RichTextEditor = ({ value, onChange, height = 500 }) => {
+const RichTextEditor = ({ value, onChange, height = 500, editorConfig }) => {
   const editorRef = useRef(null);
 
   useEffect(() => {
@@ -59,7 +59,7 @@ const RichTextEditor = ({ value, onChange, height = 500 }) => {
       onInit={(evt, editor) => editorRef.current = editor}
       value={value}
       onEditorChange={handleEditorChange}
-      init={{
+      init={editorConfig || {
         height: height,
         menubar: true,
         skin: false, // Disable skin loading since we import it
@@ -72,10 +72,64 @@ const RichTextEditor = ({ value, onChange, height = 500 }) => {
         toolbar: 'undo redo | blocks | ' +
           'bold italic forecolor | alignleft aligncenter ' +
           'alignright alignjustify | bullist numlist outdent indent | ' +
-          'pagebreak | removeformat',
+          'link image media | pagebreak | removeformat | code',
         pagebreak_separator: '<!-- pagebreak -->',
         pagebreak_split_block: true,
+        relative_urls: false,
+        remove_script_host: false,
+        convert_urls: false,
+        document_base_url: window.location.origin + '/',
+        // Image handling configuration
+        images_upload_url: '/api/upload/image', // We'll need to create this endpoint
+        automatic_uploads: true,
+        images_reuse_filename: true,
+        images_upload_handler: async (blobInfo, progress) => {
+          // Custom image upload handler
+          return new Promise((resolve, reject) => {
+            const formData = new FormData();
+            formData.append('image', blobInfo.blob(), blobInfo.filename());
+            
+            // For now, we'll use a data URL to embed images directly
+            const reader = new FileReader();
+            reader.onload = () => {
+              resolve(reader.result);
+            };
+            reader.onerror = () => {
+              reject('Failed to read image');
+            };
+            reader.readAsDataURL(blobInfo.blob());
+          });
+        },
+        // File picker for image dialog
+        file_picker_types: 'image',
+        file_picker_callback: (callback, value, meta) => {
+          if (meta.filetype === 'image') {
+            const input = document.createElement('input');
+            input.setAttribute('type', 'file');
+            input.setAttribute('accept', 'image/*');
+            
+            input.onchange = function() {
+              const file = this.files[0];
+              const reader = new FileReader();
+              
+              reader.onload = function() {
+                const id = 'blobid' + (new Date()).getTime();
+                const blobCache = tinymce.activeEditor.editorUpload.blobCache;
+                const base64 = reader.result.split(',')[1];
+                const blobInfo = blobCache.create(id, file, base64);
+                blobCache.add(blobInfo);
+                
+                callback(blobInfo.blobUri(), { title: file.name });
+              };
+              
+              reader.readAsDataURL(file);
+            };
+            
+            input.click();
+          }
+        },
         content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:14px } ' +
+          'img { max-width: 100%; height: auto; display: block; margin: 10px 0; } ' +
           // Style for ALL possible pagebreak implementations
           '.mce-pagebreak, div.mce-pagebreak, img.mce-pagebreak, div[data-mce-pagebreak], hr.mce-pagebreak { ' +
           'display: block !important; clear: both; width: 100% !important; ' +

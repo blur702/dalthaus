@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import AdminLayout from '../../../components/AdminLayout';
 import ContentEditor from '../components/ContentEditor';
 import { pageService } from '../services/contentService';
@@ -10,9 +10,17 @@ const PageManagement = ({ setIsAuthenticated }) => {
   const [successMessage, setSuccessMessage] = useState('');
   const [showEditor, setShowEditor] = useState(false);
   const [selectedPage, setSelectedPage] = useState(null);
+  const timeoutRef = useRef(null);
 
   useEffect(() => {
     loadPages();
+    
+    // Cleanup function to clear timeout on unmount
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+    };
   }, []);
 
   const loadPages = async () => {
@@ -50,7 +58,14 @@ const PageManagement = ({ setIsAuthenticated }) => {
       
       setShowEditor(false);
       loadPages();
-      setTimeout(() => setSuccessMessage(''), 3000);
+      
+      // Clear any existing timeout
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+      
+      // Set new timeout
+      timeoutRef.current = setTimeout(() => setSuccessMessage(''), 3000);
     } catch (err) {
       setError(err.message || 'Failed to save page');
     }
@@ -62,7 +77,14 @@ const PageManagement = ({ setIsAuthenticated }) => {
         await pageService.delete(page.id);
         setSuccessMessage('Page deleted successfully');
         loadPages();
-        setTimeout(() => setSuccessMessage(''), 3000);
+        
+        // Clear any existing timeout
+        if (timeoutRef.current) {
+          clearTimeout(timeoutRef.current);
+        }
+        
+        // Set new timeout
+        timeoutRef.current = setTimeout(() => setSuccessMessage(''), 3000);
       } catch (err) {
         setError(err.message || 'Failed to delete page');
       }
@@ -162,6 +184,15 @@ const PageManagement = ({ setIsAuthenticated }) => {
                         >
                           👁️
                         </button>
+                        {page.status === 'published' && (
+                          <button 
+                            className="btn-icon" 
+                            onClick={() => window.open(`http://localhost:3000/page.html?slug=${page.slug}`, '_blank')}
+                            title="View on public site"
+                          >
+                            🌐
+                          </button>
+                        )}
                         <button 
                           className="btn-icon" 
                           onClick={() => handleEdit(page)}

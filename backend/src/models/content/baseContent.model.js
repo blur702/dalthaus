@@ -30,6 +30,21 @@ const BaseContent = sequelize.define('BaseContent', {
     allowNull: false,
     defaultValue: ''
   },
+  coverImageUrl: {
+    type: DataTypes.STRING,
+    allowNull: true,
+    validate: {
+      isUrlOrPath(value) {
+        if (!value) return; // Allow null/empty
+        // Allow both full URLs and relative paths starting with /
+        const isUrl = /^https?:\/\/.+/.test(value);
+        const isPath = /^\/[\w\-\.\/]+$/.test(value);
+        if (!isUrl && !isPath) {
+          throw new Error('Cover image must be a valid URL or file path');
+        }
+      }
+    }
+  },
   status: {
     type: DataTypes.ENUM('draft', 'published', 'archived'),
     defaultValue: 'draft',
@@ -85,8 +100,6 @@ const BaseContent = sequelize.define('BaseContent', {
     beforeSave: (content) => {
       // Extract page count from content
       if (content.body) {
-        console.log('Content before normalization:', content.body.substring(0, 500));
-        
         // Normalize pagebreaks to HTML comments for storage
         content.body = content.body.replace(/<hr[^>]*class="mce-pagebreak"[^>]*>/gi, '<!-- pagebreak -->');
         content.body = content.body.replace(/<hr[^>]*data-mce-pagebreak[^>]*>/gi, '<!-- pagebreak -->');
@@ -97,8 +110,6 @@ const BaseContent = sequelize.define('BaseContent', {
         
         // Also handle case where there's no comment after the div
         content.body = content.body.replace(/<div[^>]*class="custom-pagebreak"[^>]*>[\s\S]*?<\/div>/gi, '<!-- pagebreak -->');
-        
-        console.log('Content after normalization:', content.body.substring(0, 500));
         
         // Count pagebreaks
         const pageBreaks = (content.body.match(/<!-- pagebreak -->/g) || []).length;
