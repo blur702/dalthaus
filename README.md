@@ -24,6 +24,8 @@ A modern, full-featured Content Management System (CMS) with rich text editing c
 - Automatic pagebreak detection and page counting
 - Content preview functionality
 - Parent-child relationships for hierarchical content
+- Cover image support with upload and URL options
+- Full-size cover image display on public frontend
 
 ### ✏️ Rich Text Editor (TinyMCE)
 - Full-featured WYSIWYG editor
@@ -70,7 +72,7 @@ A modern, full-featured Content Management System (CMS) with rich text editing c
 - **Sequelize** - ORM
 - **JWT** - Authentication
 - **bcrypt** - Password hashing
-- **Multer** - File uploads
+- **Multer** - File uploads (including cover images)
 
 ### Document Converter (Python Microservice)
 - **FastAPI** - Web framework
@@ -225,6 +227,13 @@ The converter will start on http://localhost:8001
 - `POST /api/content/{type}` - Create content
 - `PUT /api/content/{type}/:id` - Update content
 - `DELETE /api/content/{type}/:id` - Delete content
+- `GET /api/public/articles` - Public article listing
+- `GET /api/public/articles/:slug` - Public article detail
+
+### File Upload
+- `POST /api/upload/image` - Upload cover images
+  - Returns URL path for uploaded images
+  - Stores files in `/uploads/images/`
 
 ### TinyMCE Settings
 - `GET /api/admin/tinymce-settings` - List settings
@@ -292,6 +301,24 @@ npm start
 3. Make your changes
 4. Run tests
 5. Submit a pull request
+
+## Recent Updates
+
+### Cover Image Feature (Latest)
+- Added `coverImageUrl` field to content models (Articles, Photo Books)
+- Implemented image upload functionality with Multer
+- Created `/api/upload/image` endpoint for file uploads
+- Added UI components for cover image upload and URL input
+- Updated public frontend to display full-size cover images
+- Fixed image path issues between frontend (port 5173) and backend (port 5001)
+- Cover images display between title and content on article/photobook detail pages
+
+### Public Frontend
+- Standalone public-facing website on port 3000
+- Displays published articles and photo books
+- Full-size cover image support
+- Static file serving for uploaded images
+- Responsive design with clean layout
 
 ## License
 
