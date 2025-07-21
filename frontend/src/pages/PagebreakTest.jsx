@@ -33,16 +33,10 @@ const PagebreakTest = () => {
   const sampleContentWithPagebreaks = `
     <h1>Page 1</h1>
     <p>This is the first page content.</p>
-    <div class="custom-pagebreak" contenteditable="false" style="display: block; width: 100%; height: 40px; margin: 20px 0; position: relative; user-select: none;">
-      <div style="position: absolute; left: 0; right: 0; top: 50%; height: 2px; background: repeating-linear-gradient(90deg, #999 0, #999 10px, transparent 10px, transparent 20px);"></div>
-      <div style="position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); background: white; padding: 4px 16px; border: 2px solid #999; border-radius: 4px; color: #666; font-size: 11px; font-weight: bold; font-family: sans-serif;">PAGE BREAK</div>
-    </div><!-- pagebreak -->
+    <img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" class="mce-pagebreak" data-mce-resize="false" data-mce-placeholder />
     <h2>Page 2</h2>
     <p>This is the second page content.</p>
-    <div class="custom-pagebreak" contenteditable="false" style="display: block; width: 100%; height: 40px; margin: 20px 0; position: relative; user-select: none;">
-      <div style="position: absolute; left: 0; right: 0; top: 50%; height: 2px; background: repeating-linear-gradient(90deg, #999 0, #999 10px, transparent 10px, transparent 20px);"></div>
-      <div style="position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); background: white; padding: 4px 16px; border: 2px solid #999; border-radius: 4px; color: #666; font-size: 11px; font-weight: bold; font-family: sans-serif;">PAGE BREAK</div>
-    </div><!-- pagebreak -->
+    <img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" class="mce-pagebreak" data-mce-resize="false" data-mce-placeholder />
     <h2>Page 3</h2>
     <p>This is the third page content.</p>
   `;
@@ -57,7 +51,7 @@ const PagebreakTest = () => {
       
       <div style={{ marginBottom: '20px' }}>
         <button onClick={loadSampleContent} style={{ marginRight: '10px' }}>
-          Load Sample Content with Pagebreaks
+          Load Sample Content
         </button>
         <button onClick={handleTest} style={{ marginRight: '10px' }}>
           Test Content in Viewer

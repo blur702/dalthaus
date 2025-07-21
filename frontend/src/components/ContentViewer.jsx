@@ -13,17 +13,16 @@ const ContentViewer = ({ content, showPagination = true }) => {
       console.log('Original content:', content.substring(0, 500) + '...');
       
       // Replace all known pagebreak formats with our standard marker
-      // 1. TinyMCE pagebreak plugin format
-      normalizedContent = normalizedContent.replace(/<img[^>]*class="mce-pagebreak"[^>]*>/gi, '<!-- pagebreak -->');
+      // 1. TinyMCE pagebreak plugin format - img tags with mce-pagebreak class
+      normalizedContent = normalizedContent.replace(/<img[^>]*class=["'][^"']*mce-pagebreak[^"']*["'][^>]*\/?>/gi, '<!-- pagebreak -->');
       
       // 2. Custom pagebreak divs (from old implementation)
-      normalizedContent = normalizedContent.replace(/<div[^>]*class="custom-pagebreak"[^>]*>[\s\S]*?<\/div><!-- pagebreak -->/gi, '<!-- pagebreak -->');
-      normalizedContent = normalizedContent.replace(/<div[^>]*class="custom-pagebreak"[^>]*>[\s\S]*?<\/div>/gi, '<!-- pagebreak -->');
+      normalizedContent = normalizedContent.replace(/<div[^>]*class=["'][^"']*custom-pagebreak[^"']*["'][^>]*>[\s\S]*?<\/div>(?:\s*<!-- pagebreak -->)?/gi, '<!-- pagebreak -->');
       
       // 3. Other formats
-      normalizedContent = normalizedContent.replace(/<hr[^>]*class="mce-pagebreak"[^>]*>/gi, '<!-- pagebreak -->');
-      normalizedContent = normalizedContent.replace(/<hr[^>]*data-mce-pagebreak[^>]*>/gi, '<!-- pagebreak -->');
-      normalizedContent = normalizedContent.replace(/<div[^>]*class="mce-pagebreak"[^>]*>.*?<\/div>/gi, '<!-- pagebreak -->');
+      normalizedContent = normalizedContent.replace(/<hr[^>]*class=["'][^"']*mce-pagebreak[^"']*["'][^>]*\/?>/gi, '<!-- pagebreak -->');
+      normalizedContent = normalizedContent.replace(/<hr[^>]*data-mce-pagebreak[^>]*\/?>/gi, '<!-- pagebreak -->');
+      normalizedContent = normalizedContent.replace(/<div[^>]*class=["'][^"']*mce-pagebreak[^"']*["'][^>]*>.*?<\/div>/gi, '<!-- pagebreak -->');
       normalizedContent = normalizedContent.replace(/<div[^>]*data-mce-pagebreak[^>]*>.*?<\/div>/gi, '<!-- pagebreak -->');
       
       // Clean up any duplicate pagebreak markers
