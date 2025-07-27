@@ -21,6 +21,7 @@ import TemplateManagement from './modules/templates/pages/TemplateManagement';
 import GlobalTemplateSettings from './modules/templates/pages/GlobalTemplateSettings';
 import ProtectedRoute from './components/ProtectedRoute';
 import ErrorBoundary from './components/ErrorBoundary';
+import ScrollToTop from './components/ScrollToTop';
 import api from './services/api';
 
 // Public components
@@ -77,6 +78,7 @@ function App() {
   return (
     <ErrorBoundary>
       <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+        <ScrollToTop />
         <Routes>
           <Route 
           path="/login" 

@@ -1,8 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 
 const ContentViewer = ({ content, showPagination = true }) => {
   const [pages, setPages] = useState([]);
   const [currentPage, setCurrentPage] = useState(0);
+  const [isTransitioning, setIsTransitioning] = useState(false);
+  const contentRef = useRef(null);
 
   useEffect(() => {
     if (content) {
@@ -60,20 +62,46 @@ const ContentViewer = ({ content, showPagination = true }) => {
     }
   }, [content]);
 
+  const animatePageChange = async (newPage) => {
+    // Start fade out
+    setIsTransitioning(true);
+    
+    // Wait for fade out
+    await new Promise(resolve => setTimeout(resolve, 150));
+    
+    // Change page
+    setCurrentPage(newPage);
+    
+    // Smooth scroll to top of content
+    if (contentRef.current) {
+      const contentTop = contentRef.current.offsetTop - 20;
+      window.scrollTo({
+        top: contentTop,
+        behavior: 'smooth'
+      });
+    }
+    
+    // Fade in after a short delay
+    await new Promise(resolve => setTimeout(resolve, 100));
+    setIsTransitioning(false);
+  };
+
   const handlePreviousPage = () => {
-    if (currentPage > 0) {
-      setCurrentPage(currentPage - 1);
+    if (currentPage > 0 && !isTransitioning) {
+      animatePageChange(currentPage - 1);
     }
   };
 
   const handleNextPage = () => {
-    if (currentPage < pages.length - 1) {
-      setCurrentPage(currentPage + 1);
+    if (currentPage < pages.length - 1 && !isTransitioning) {
+      animatePageChange(currentPage + 1);
     }
   };
 
   const handlePageSelect = (pageIndex) => {
-    setCurrentPage(pageIndex);
+    if (pageIndex !== currentPage && !isTransitioning) {
+      animatePageChange(pageIndex);
+    }
   };
 
   if (!content) {
@@ -95,9 +123,14 @@ const ContentViewer = ({ content, showPagination = true }) => {
   });
 
   return (
-    <div className="content-viewer">
+    <div className="content-viewer" ref={contentRef}>
       <div 
         className="content-display"
+        style={{
+          opacity: isTransitioning ? 0 : 1,
+          transition: 'opacity 150ms ease-in-out',
+          minHeight: '300px'
+        }}
         dangerouslySetInnerHTML={{ __html: pages[currentPage] || '' }}
       />
       
@@ -106,7 +139,11 @@ const ContentViewer = ({ content, showPagination = true }) => {
           <button 
             className="pagination-btn prev"
             onClick={handlePreviousPage}
-            disabled={currentPage === 0}
+            disabled={currentPage === 0 || isTransitioning}
+            style={{
+              opacity: isTransitioning ? 0.5 : 1,
+              cursor: isTransitioning ? 'wait' : 'pointer'
+            }}
           >
             ← Previous
           </button>
@@ -130,7 +167,11 @@ const ContentViewer = ({ content, showPagination = true }) => {
           <button 
             className="pagination-btn next"
             onClick={handleNextPage}
-            disabled={currentPage === pages.length - 1}
+            disabled={currentPage === pages.length - 1 || isTransitioning}
+            style={{
+              opacity: isTransitioning ? 0.5 : 1,
+              cursor: isTransitioning ? 'wait' : 'pointer'
+            }}
           >
             Next →
           </button>
