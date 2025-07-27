@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import RichTextEditor from '../../../components/RichTextEditor';
-import './SettingsPreview.css';
 
 const SettingsPreview = ({ setting, onClose }) => {
   const [content, setContent] = useState(`

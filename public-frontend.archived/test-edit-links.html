@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Edit Links</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .test-container {
+            max-width: 1200px;
+            margin: 50px auto;
+            padding: 20px;
+        }
+        .status {
+            background: #f0f0f0;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+        .test-article {
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>Edit Links Test Page</h1>
+        
+        <div class="status">
+            <h2>Admin Status:</h2>
+            <p>Admin Mode: <span id="admin-status">Checking...</span></p>
+            <p>Edit Links Should Show: <span id="edit-status">Checking...</span></p>
+        </div>
+
+        <div class="test-article">
+            <h2>Test Article Card:</h2>
+            <div class="featured-articles">
+                <article class="article-card">
+                    <span id="test-edit-link"></span>
+                    <img src="/images/placeholder.svg" alt="Test" class="article-image">
+                    <div class="article-content">
+                        <h2 class="article-title">
+                            <a href="#">Test Article</a>
+                        </h2>
+                        <p class="article-excerpt">
+                            This is a test article to verify edit links are working.
+                        </p>
+                    </div>
+                </article>
+            </div>
+        </div>
+
+        <div class="test-article">
+            <h2>Test Article Detail:</h2>
+            <article class="article-detail">
+                <span id="test-detail-edit-link"></span>
+                <h1>Test Article Detail View</h1>
+                <div class="article-body">
+                    <p>This is the detail view where edit links should always be visible.</p>
+                </div>
+            </article>
+        </div>
+
+        <div class="status">
+            <h2>Debug Info:</h2>
+            <pre id="debug-info"></pre>
+        </div>
+    </div>
+
+    <script src="js/maintenance-check.js"></script>
+    <script src="js/main.js"></script>
+    <script>
+        // Test the functions directly
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check admin status
+            const isAdmin = isAdminLoggedIn();
+            document.getElementById('admin-status').textContent = isAdmin ? 'YES (Admin mode active)' : 'NO (Not in admin mode)';
+            document.getElementById('edit-status').textContent = isAdmin ? 'YES' : 'NO';
+            
+            // Test edit link generation
+            if (isAdmin) {
+                const testId = 'test-123';
+                const articleEditLink = getEditLink('article', testId);
+                const detailEditLink = getEditLink('article', testId);
+                
+                document.getElementById('test-edit-link').innerHTML = articleEditLink;
+                document.getElementById('test-detail-edit-link').innerHTML = detailEditLink;
+            }
+            
+            // Show debug info
+            const debugInfo = {
+                isAdminLoggedIn: isAdmin,
+                localStorage_token: !!localStorage.getItem('token'),
+                sessionStorage_adminToken: !!sessionStorage.getItem('adminToken'),
+                localStorage_adminPreviewMode: localStorage.getItem('adminPreviewMode'),
+                url_has_adminMode: window.location.search.includes('adminMode=true'),
+                getEditLink_exists: typeof getEditLink === 'function'
+            };
+            
+            document.getElementById('debug-info').textContent = JSON.stringify(debugInfo, null, 2);
+        });
+    </script>
+</body>
+</html>

@@ -30,7 +30,7 @@ const BaseContent = sequelize.define('BaseContent', {
     allowNull: false,
     defaultValue: ''
   },
-  coverImageUrl: {
+  featuredImage: {
     type: DataTypes.STRING,
     allowNull: true,
     validate: {
@@ -40,10 +40,44 @@ const BaseContent = sequelize.define('BaseContent', {
         const isUrl = /^https?:\/\/.+/.test(value);
         const isPath = /^\/[\w\-\.\/]+$/.test(value);
         if (!isUrl && !isPath) {
-          throw new Error('Cover image must be a valid URL or file path');
+          throw new Error('Featured image must be a valid URL or file path');
         }
       }
     }
+  },
+  summary: {
+    type: DataTypes.TEXT,
+    allowNull: true,
+    comment: 'Brief summary of the content for listing pages'
+  },
+  teaserImage: {
+    type: DataTypes.STRING,
+    allowNull: true,
+    field: 'teaser_image',
+    validate: {
+      isUrlOrPath(value) {
+        if (!value) return; // Allow null/empty
+        // Allow both full URLs and relative paths starting with /
+        const isUrl = /^https?:\/\/.+/.test(value);
+        const isPath = /^\/[\w\-\.\/]+$/.test(value);
+        if (!isUrl && !isPath) {
+          throw new Error('Teaser image must be a valid URL or file path');
+        }
+      }
+    },
+    comment: 'Image URL for content listings/teasers'
+  },
+  featuredImageAlt: {
+    type: DataTypes.STRING,
+    allowNull: true,
+    field: 'featured_image_alt',
+    comment: 'Alt text for featured image accessibility'
+  },
+  teaserImageAlt: {
+    type: DataTypes.STRING,
+    allowNull: true,
+    field: 'teaser_image_alt',
+    comment: 'Alt text for teaser image accessibility'
   },
   status: {
     type: DataTypes.ENUM('draft', 'published', 'archived'),

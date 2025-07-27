@@ -5,8 +5,8 @@ const { protect, isAdmin } = require('../../middleware/auth.middleware');
 
 // Public routes
 router.get('/', photoBookController.getAll);
-router.get('/:id', photoBookController.getById);
-router.get('/slug/:slug', photoBookController.getBySlug);
+router.get('/by-id/:id', photoBookController.getById);
+router.get('/:slug', photoBookController.getBySlug);
 
 // Protected routes (require authentication and admin role)
 router.use(protect, isAdmin);

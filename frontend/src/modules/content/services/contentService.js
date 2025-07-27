@@ -19,7 +19,7 @@ class ContentService {
   // Get single content by ID
   async getById(id) {
     try {
-      const response = await api.get(`${this.endpoint}/${id}`);
+      const response = await api.get(`${this.endpoint}/by-id/${id}`);
       return response.data;
     } catch (error) {
       throw this.handleError(error);
@@ -29,7 +29,7 @@ class ContentService {
   // Get content by slug
   async getBySlug(slug) {
     try {
-      const response = await api.get(`${this.endpoint}/slug/${slug}`);
+      const response = await api.get(`${this.endpoint}/${slug}`);
       return response.data;
     } catch (error) {
       throw this.handleError(error);

@@ -1,4 +1,19 @@
 import React, { useState, useEffect, useRef } from 'react';
+import {
+  Box,
+  Container,
+  Typography,
+  Button,
+  Alert,
+  Snackbar,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogContentText,
+  DialogActions,
+  Stack
+} from '@mui/material';
+import AddIcon from '@mui/icons-material/Add';
 import AdminLayout from '../../../components/AdminLayout';
 import UserList from '../components/UserList';
 import UserModal from '../components/UserModal';
@@ -88,72 +103,89 @@ const UserManagement = ({ setIsAuthenticated }) => {
 
   return (
     <AdminLayout setIsAuthenticated={setIsAuthenticated}>
-      <div className="user-management">
-        <div className="page-header">
-          <h2>User Management</h2>
-          <button className="btn-primary" onClick={handleCreate}>
-            Create New User
-          </button>
-        </div>
-
-        {error && (
-          <div className="alert alert-error">
-            {error}
-            <button 
-              className="alert-close" 
-              onClick={() => setError('')}
+      <Container maxWidth="lg">
+        <Box sx={{ py: 3 }}>
+          <Stack 
+            direction="row" 
+            justifyContent="space-between" 
+            alignItems="center" 
+            sx={{ mb: 3 }}
+          >
+            <Typography variant="h4" component="h2">
+              User Management
+            </Typography>
+            <Button
+              variant="contained"
+              startIcon={<AddIcon />}
+              onClick={handleCreate}
             >
-              &times;
-            </button>
-          </div>
-        )}
+              Create New User
+            </Button>
+          </Stack>
 
-        {successMessage && (
-          <div className="alert alert-success">
-            {successMessage}
-          </div>
-        )}
+          {error && (
+            <Alert 
+              severity="error" 
+              onClose={() => setError('')}
+              sx={{ mb: 2 }}
+            >
+              {error}
+            </Alert>
+          )}
 
-        <div className="user-management-content">
+          <Snackbar
+            open={!!successMessage}
+            autoHideDuration={3000}
+            onClose={() => setSuccessMessage('')}
+            anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+          >
+            <Alert onClose={() => setSuccessMessage('')} severity="success">
+              {successMessage}
+            </Alert>
+          </Snackbar>
+
           <UserList 
             users={users}
             onEdit={handleEdit}
             onDelete={handleDelete}
             loading={loading}
           />
-        </div>
 
-        <UserModal
-          user={selectedUser}
-          isOpen={modalOpen}
-          onClose={() => setModalOpen(false)}
-          onSave={handleSave}
-        />
+          <UserModal
+            user={selectedUser}
+            isOpen={modalOpen}
+            onClose={() => setModalOpen(false)}
+            onSave={handleSave}
+          />
 
-        {deleteConfirm && (
-          <div className="modal-overlay" onClick={() => setDeleteConfirm(null)}>
-            <div className="modal-content confirm-dialog" onClick={e => e.stopPropagation()}>
-              <h3>Confirm Delete</h3>
-              <p>Are you sure you want to delete user <strong>{deleteConfirm.username}</strong>?</p>
-              <p className="warning">This action cannot be undone.</p>
-              <div className="modal-actions">
-                <button 
-                  className="btn-cancel" 
-                  onClick={() => setDeleteConfirm(null)}
-                >
-                  Cancel
-                </button>
-                <button 
-                  className="btn-delete" 
-                  onClick={confirmDelete}
-                >
-                  Delete User
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
-      </div>
+          <Dialog
+            open={!!deleteConfirm}
+            onClose={() => setDeleteConfirm(null)}
+          >
+            <DialogTitle>Confirm Delete</DialogTitle>
+            <DialogContent>
+              <DialogContentText>
+                Are you sure you want to delete user <strong>{deleteConfirm?.username}</strong>?
+              </DialogContentText>
+              <Alert severity="warning" sx={{ mt: 2 }}>
+                This action cannot be undone.
+              </Alert>
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={() => setDeleteConfirm(null)}>
+                Cancel
+              </Button>
+              <Button 
+                onClick={confirmDelete} 
+                color="error" 
+                variant="contained"
+              >
+                Delete User
+              </Button>
+            </DialogActions>
+          </Dialog>
+        </Box>
+      </Container>
     </AdminLayout>
   );
 };

@@ -4,9 +4,13 @@ const express = require('express');
 const cors = require('cors');
 const bcryptjs = require('bcryptjs');
 const path = require('path');
+const https = require('https');
+const http = require('http');
+const fs = require('fs');
 const sequelize = require('./src/config/database');
 const User = require('./src/models/user.model');
 const TinymceSettings = require('./src/models/tinymceSettings.model');
+const Template = require('./src/models/templates.model');
 
 // Import content models to register them
 require('./src/models/content');
@@ -18,10 +22,20 @@ const articleRoutes = require('./src/routes/content/article.routes');
 const pageRoutes = require('./src/routes/content/page.routes');
 const documentUploadRoutes = require('./src/routes/documentUpload.routes');
 const tinymceSettingsRoutes = require('./src/routes/tinymceSettings.routes');
+const tinymceRoutes = require('./src/routes/tinymce.routes');
 const uploadRoutes = require('./src/routes/upload.routes');
+const settingsRoutes = require('./src/routes/settings.routes');
+const templateRoutes = require('./src/routes/templates.routes');
+const globalSettingsRoutes = require('./src/routes/globalSettings.routes');
+
+// Import maintenance middleware
+const { checkMaintenanceMode } = require('./src/middleware/maintenance.middleware');
 
 const app = express();
 const PORT = process.env.PORT || 5001;
+const HTTP_PORT = process.env.HTTP_PORT || 80;
+const HTTPS_PORT = process.env.HTTPS_PORT || 443;
+const USE_HTTPS = process.env.USE_HTTPS === 'true' || fs.existsSync(path.join(__dirname, 'ssl/cert.pem'));
 
 // Middleware
 app.use(express.json());
@@ -30,19 +44,30 @@ app.use(cors());
 // Serve uploaded images statically
 app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 
-// API Routes
+// API Routes - Auth (never blocked by maintenance)
 app.use('/api/auth', authRoutes);
+
+// API Routes - Admin (protected by auth middleware, not maintenance)
 app.use('/api/users', userRoutes);
+app.use('/api/admin/tinymce-settings', tinymceSettingsRoutes);
+app.use('/api/settings', settingsRoutes);
+app.use('/api/settings', globalSettingsRoutes);
+app.use('/api/templates', templateRoutes);
+app.use('/api/tinymce', tinymceRoutes);
+app.use('/api/upload', uploadRoutes);
+
+// API Routes - Content (could be affected by maintenance)
 app.use('/api/content/photo-books', photoBookRoutes);
 app.use('/api/content/articles', articleRoutes);
 app.use('/api/content/pages', pageRoutes);
 app.use('/api/document', documentUploadRoutes);
-app.use('/api/admin/tinymce-settings', tinymceSettingsRoutes);
-app.use('/api/upload', uploadRoutes);
 
-// Public API routes (no authentication required)
+// Public API routes (no authentication required - affected by maintenance)
 const publicRoutes = require('./src/routes/public.routes');
-app.use('/api/public', publicRoutes);
+app.use('/api/public', checkMaintenanceMode, publicRoutes);
+
+// Apply maintenance check to uploaded files
+app.use('/uploads', checkMaintenanceMode);
 
 // Production deployment configuration
 if (process.env.NODE_ENV === 'production') {
@@ -70,12 +95,12 @@ async function seedAdminUser() {
     });
 
     if (created) {
-      console.log('Admin user created successfully');
+      // Removed console statement
     } else {
-      console.log('Admin user already exists');
+      // Removed console statement
     }
   } catch (error) {
-    console.error('Error seeding admin user:', error);
+    // Removed console statement
   }
 }
 
@@ -92,9 +117,43 @@ async function seedTinymcePresets() {
         settings: {
           height: 300,
           menubar: false,
-          plugins: ['lists', 'link', 'searchreplace', 'code'],
+          plugins: ['lists', 'link', 'searchreplace', 'code', 'pagebreak'],
           toolbar: 'undo redo | bold italic | alignleft aligncenter alignright | bullist numlist | link | code',
           content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }'
+        }
+      },
+      {
+        name: 'Common Editor',
+        description: 'Locked editor with common functions including pagebreak. Can be duplicated but not deleted.',
+        isPreset: true,
+        isLocked: true,
+        isDefault: false,
+        profileType: 'system',
+        priority: 10,
+        tags: ['common', 'locked', 'pagebreak'],
+        settings: {
+          height: 400,
+          menubar: false,
+          plugins: [
+            'lists', 'link', 'image', 'charmap', 'preview',
+            'anchor', 'searchreplace', 'visualblocks', 'code',
+            'insertdatetime', 'table', 'wordcount', 'pagebreak'
+          ],
+          toolbar: 'undo redo | formatselect | bold italic backcolor | ' +
+                   'alignleft aligncenter alignright alignjustify | ' +
+                   'bullist numlist outdent indent | link image | ' +
+                   'table | pagebreak | removeformat | code',
+          pagebreak_separator: '<!-- pagebreak -->',
+          pagebreak_split_block: true,
+          content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }',
+          image_advtab: true,
+          table_default_attributes: {
+            border: '1'
+          },
+          table_default_styles: {
+            'border-collapse': 'collapse',
+            'width': '100%'
+          }
         }
       },
       {
@@ -135,7 +194,7 @@ async function seedTinymcePresets() {
           plugins: [
             'advlist', 'autolink', 'lists', 'link', 'image', 'charmap',
             'anchor', 'searchreplace', 'visualblocks', 'code', 'fullscreen',
-            'insertdatetime', 'media', 'table', 'wordcount'
+            'insertdatetime', 'media', 'table', 'wordcount', 'pagebreak'
           ],
           toolbar: 'undo redo | formatselect | bold italic backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image | removeformat | help',
           block_formats: 'Paragraph=p; Header 1=h1; Header 2=h2; Header 3=h3; Header 4=h4; Quote=blockquote; Code=pre',
@@ -151,7 +210,7 @@ async function seedTinymcePresets() {
         settings: {
           height: 400,
           menubar: false,
-          plugins: ['lists', 'link', 'image', 'table', 'code', 'visualblocks'],
+          plugins: ['lists', 'link', 'image', 'table', 'code', 'visualblocks', 'pagebreak'],
           toolbar: 'undo redo | bold italic | alignleft aligncenter alignright | bullist numlist | link image | table | code visualblocks',
           forced_root_block: 'div',
           convert_urls: false,
@@ -177,7 +236,7 @@ async function seedTinymcePresets() {
           plugins: [
             'advlist', 'autolink', 'lists', 'link', 'image', 'charmap',
             'anchor', 'searchreplace', 'visualblocks', 'code', 'fullscreen',
-            'insertdatetime', 'table', 'wordcount', 'codesample'
+            'insertdatetime', 'table', 'wordcount', 'codesample', 'pagebreak'
           ],
           toolbar: 'undo redo | blocks | bold italic | alignleft aligncenter alignright | bullist numlist outdent indent | link image | codesample | table | code',
           codesample_languages: [
@@ -203,13 +262,66 @@ async function seedTinymcePresets() {
       });
       
       if (created) {
-        console.log(`TinyMCE preset '${preset.name}' created successfully`);
+        // Removed console statement
       }
     }
     
-    console.log('TinyMCE presets seeding completed');
+    // Removed console statement
   } catch (error) {
-    console.error('Error seeding TinyMCE presets:', error);
+    // Removed console statement
+  }
+}
+
+// Template seeding function
+async function seedDefaultTemplates() {
+  try {
+    const defaultTemplates = [
+      {
+        name: 'Classic Photography',
+        slug: 'classic-photography',
+        type: 'front_page',
+        description: 'A clean, professional template for photography websites',
+        isDefault: true,
+        isActive: true,
+        configuration: {
+          siteTitle: 'Don Althaus',
+          siteSubtitle: 'photography',
+          missionTitle: "It's all about storytelling...",
+          missionText: "Effective storytelling is the heart and soul of photography.",
+          showMission: true,
+          primaryColor: '#2c3e50',
+          backgroundColor: '#ffffff',
+          textColor: '#333333'
+        },
+        headerSettings: {
+          headerVariant: 'banner',
+          showNavigation: true,
+          navPosition: 'below'
+        },
+        footerSettings: {
+          footerVariant: 'detailed',
+          showContactInfo: true,
+          showSocialLinks: true
+        },
+        layoutSettings: {
+          contentWidth: 'lg',
+          showSidebar: false
+        }
+      }
+    ];
+
+    for (const templateData of defaultTemplates) {
+      const [template, created] = await Template.findOrCreate({
+        where: { slug: templateData.slug },
+        defaults: templateData
+      });
+      
+      if (created) {
+        // Removed console statement
+      }
+    }
+  } catch (error) {
+    // Removed console statement
   }
 }
 
@@ -220,16 +332,45 @@ async function startServer() {
     console.log('Database connection established successfully');
     
     await sequelize.sync();
-    console.log('Database synchronized');
+    console.log('Database synchronized')
     
     await seedAdminUser();
-    await seedTinymcePresets();
+    // await seedTinymcePresets(); // Temporarily disabled due to foreign key issues
+    await seedDefaultTemplates();
     
-    app.listen(PORT, () => {
-      console.log(`Server is running on port ${PORT}`);
-    });
+    // For development, continue using the single port
+    if (process.env.NODE_ENV === 'development') {
+      app.listen(PORT, '0.0.0.0', () => {
+        console.log(`Development server running on port ${PORT}`);
+      });
+    } else {
+      // For production/shared hosting, set up HTTP and HTTPS servers
+      const httpServer = http.createServer(app);
+      
+      httpServer.listen(HTTP_PORT, '0.0.0.0', () => {
+        console.log(`HTTP server running on port ${HTTP_PORT}`);
+      });
+
+      if (USE_HTTPS) {
+        try {
+          const httpsOptions = {
+            key: fs.readFileSync(path.join(__dirname, 'ssl/key.pem')),
+            cert: fs.readFileSync(path.join(__dirname, 'ssl/cert.pem'))
+          };
+          
+          const httpsServer = https.createServer(httpsOptions, app);
+          
+          httpsServer.listen(HTTPS_PORT, '0.0.0.0', () => {
+            console.log(`HTTPS server running on port ${HTTPS_PORT}`);
+          });
+        } catch (error) {
+          console.error('Failed to start HTTPS server:', error);
+          console.log('Continuing with HTTP only');
+        }
+      }
+    }
   } catch (error) {
-    console.error('Unable to start server:', error);
+    console.error('Failed to start server:', error);
     process.exit(1);
   }
 }

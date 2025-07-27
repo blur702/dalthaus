@@ -8,13 +8,28 @@ import ArticleManagement from './modules/content/pages/ArticleManagement';
 import PageManagement from './modules/content/pages/PageManagement';
 import PhotoBookManagement from './modules/content/pages/PhotoBookManagement';
 import TinymceSettings from './modules/settings/TinymceSettings';
+import Settings from './modules/settings/Settings';
+import GlobalSettings from './modules/settings/GlobalSettings';
 import ContentPreview from './pages/ContentPreview';
 import TestPagebreak from './pages/TestPagebreak';
 import PagebreakTest from './pages/PagebreakTest';
 import SimplePagebreakTest from './pages/SimplePagebreakTest';
+import TestTinymceIntegration from './pages/TestTinymceIntegration';
+import MaterialUITest from './pages/MaterialUITest';
+import TemplateBuilder from './modules/templates/pages/TemplateBuilder';
+import TemplateManagement from './modules/templates/pages/TemplateManagement';
+import GlobalTemplateSettings from './modules/templates/pages/GlobalTemplateSettings';
 import ProtectedRoute from './components/ProtectedRoute';
 import ErrorBoundary from './components/ErrorBoundary';
 import api from './services/api';
+
+// Public components
+import PublicLayout from './layouts/PublicLayout';
+import TemplateBasedHomePage from './pages/public/TemplateBasedHomePage';
+import ArticleView from './pages/public/ArticleView';
+import ArticleList from './pages/public/ArticleList';
+import PhotoBookList from './pages/public/PhotoBookList';
+import PhotoBookView from './pages/public/PhotoBookView';
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -61,7 +76,7 @@ function App() {
 
   return (
     <ErrorBoundary>
-      <Router>
+      <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
         <Routes>
           <Route 
           path="/login" 
@@ -115,31 +130,108 @@ function App() {
             </ProtectedRoute>
           } 
         />
-        <Route 
-          path="/admin/settings/tinymce" 
+        <Route
+          path="/admin/settings"
+          element={
+            <ProtectedRoute isAuthenticated={isAuthenticated}>
+              <Settings setIsAuthenticated={setIsAuthenticated} />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/settings/tinymce"
           element={
             <ProtectedRoute isAuthenticated={isAuthenticated}>
               <TinymceSettings setIsAuthenticated={setIsAuthenticated} />
             </ProtectedRoute>
-          } 
+          }
         />
-        <Route 
-          path="/preview/:type/:id" 
-          element={<ContentPreview />} 
+        <Route
+          path="/admin/settings/global"
+          element={
+            <ProtectedRoute isAuthenticated={isAuthenticated}>
+              <GlobalSettings setIsAuthenticated={setIsAuthenticated} />
+            </ProtectedRoute>
+          }
         />
-        <Route 
-          path="/test-pagebreak" 
-          element={<TestPagebreak />} 
+        <Route
+          path="/admin/templates"
+          element={
+            <ProtectedRoute isAuthenticated={isAuthenticated}>
+              <TemplateManagement setIsAuthenticated={setIsAuthenticated} />
+            </ProtectedRoute>
+          }
         />
-        <Route 
-          path="/pagebreak-test" 
-          element={<PagebreakTest />} 
+        <Route
+          path="/admin/templates/builder"
+          element={
+            <ProtectedRoute isAuthenticated={isAuthenticated}>
+              <TemplateBuilder setIsAuthenticated={setIsAuthenticated} />
+            </ProtectedRoute>
+          }
         />
-        <Route 
-          path="/simple-pagebreak-test" 
-          element={<SimplePagebreakTest />} 
+        <Route
+          path="/admin/templates/builder/:id"
+          element={
+            <ProtectedRoute isAuthenticated={isAuthenticated}>
+              <TemplateBuilder setIsAuthenticated={setIsAuthenticated} />
+            </ProtectedRoute>
+          }
         />
-        <Route path="/" element={<Navigate to="/login" replace />} />
+        <Route
+          path="/admin/templates/global-settings"
+          element={
+            <ProtectedRoute isAuthenticated={isAuthenticated}>
+              <GlobalTemplateSettings setIsAuthenticated={setIsAuthenticated} />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/preview/:type/:id"
+          element={<ContentPreview />}
+        />
+        <Route
+          path="/test-pagebreak"
+          element={<TestPagebreak />}
+        />
+        <Route
+          path="/pagebreak-test"
+          element={<PagebreakTest />}
+        />
+        <Route
+          path="/simple-pagebreak-test"
+          element={<SimplePagebreakTest />}
+        />
+        <Route
+          path="/admin/test/tinymce"
+          element={
+            <ProtectedRoute isAuthenticated={isAuthenticated}>
+              <TestTinymceIntegration setIsAuthenticated={setIsAuthenticated} />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/test/material-ui"
+          element={
+            <ProtectedRoute isAuthenticated={isAuthenticated}>
+              <MaterialUITest setIsAuthenticated={setIsAuthenticated} />
+            </ProtectedRoute>
+          }
+        />
+        {/* Public Routes */}
+        <Route path="/" element={<PublicLayout />}>
+          <Route index element={<TemplateBasedHomePage />} />
+          <Route path="articles" element={<ArticleList />} />
+          <Route path="articles/:slug" element={<ArticleView />} />
+          <Route path="photobooks" element={<PhotoBookList />} />
+          <Route path="photobooks/:slug" element={<PhotoBookView />} />
+        </Route>
+        
+        {/* Admin login redirect */}
+        <Route path="/admin/login" element={<Navigate to="/login" replace />} />
+        
+        {/* Default redirect - only if no other route matches */}
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </Router>
     </ErrorBoundary>

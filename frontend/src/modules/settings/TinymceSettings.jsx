@@ -1,25 +1,23 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
 import AdminLayout from '../../components/AdminLayout';
-import axios from 'axios';
-import SettingsList from './components/SettingsList';
-import SettingsEditor from './components/SettingsEditor';
-import SettingsPreview from './components/SettingsPreview';
-import './TinymceSettings.css';
+import TinymceProfileEditor from './TinymceProfileEditor';
+import { profileService } from './tinymceService';
+import api from '../../services/api';
 
 const TinymceSettings = ({ setIsAuthenticated }) => {
-  const [settings, setSettings] = useState([]);
-  const [selectedSetting, setSelectedSetting] = useState(null);
-  const [editMode, setEditMode] = useState(false);
-  const [previewMode, setPreviewMode] = useState(false);
+  const [profiles, setProfiles] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
-  const navigate = useNavigate();
+  const [showEditor, setShowEditor] = useState(false);
+  const [selectedProfile, setSelectedProfile] = useState(null);
+  const [defaultProfileId, setDefaultProfileId] = useState(null);
+  const [isSettingDefault, setIsSettingDefault] = useState(false);
   const timeoutRef = useRef(null);
 
   useEffect(() => {
-    fetchSettings();
+    loadProfiles();
+    loadDefaultProfile();
     
     // Cleanup function to clear timeout on unmount
     return () => {
@@ -29,84 +27,80 @@ const TinymceSettings = ({ setIsAuthenticated }) => {
     };
   }, []);
 
-  const fetchSettings = async () => {
+  const loadProfiles = async () => {
     try {
       setLoading(true);
-      const token = localStorage.getItem('token');
-      const response = await axios.get('/api/admin/tinymce-settings', {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      setSettings(response.data);
-      setError(null);
+      setError('');
+      const data = await profileService.getAll();
+      setProfiles(data || []);
     } catch (err) {
-      console.error('Error fetching settings:', err);
-      setError('Failed to load settings');
-      if (err.response?.status === 401) {
-        navigate('/login');
-      }
+      setError(err.message || 'Failed to load profiles');
     } finally {
       setLoading(false);
     }
   };
 
-  const handleSelectSetting = (setting) => {
-    setSelectedSetting(setting);
-    setEditMode(false);
-    setPreviewMode(false);
-  };
-
-  const handleCreateNew = () => {
-    const newSetting = {
-      name: '',
-      description: '',
-      settings: {
-        height: 400,
-        menubar: true,
-        plugins: ['lists', 'link', 'image', 'code'],
-        toolbar: 'undo redo | bold italic | alignleft aligncenter alignright | bullist numlist | link image | code',
-        content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }'
-      },
-      tags: [],
-      isDefault: false
-    };
-    setSelectedSetting(newSetting);
-    setEditMode(true);
-    setPreviewMode(false);
-  };
-
-  const handleEdit = () => {
-    setEditMode(true);
-    setPreviewMode(false);
-  };
-
-  const handlePreview = () => {
-    setPreviewMode(true);
-    setEditMode(false);
-  };
-
-  const handleSave = async (settingData) => {
+  const loadDefaultProfile = async () => {
     try {
-      const token = localStorage.getItem('token');
-      let response;
+      const response = await api.get('/tinymce/default-profile');
+      setDefaultProfileId(response.data.profileId);
+    } catch (error) {
+      console.error('Error loading default profile:', error);
+    }
+  };
+
+  const handleSetDefaultProfile = async (profileId) => {
+    setIsSettingDefault(true);
+    setError('');
+    setSuccessMessage('');
+    
+    try {
+      const response = await api.put('/tinymce/default-profile', { profileId });
+      setDefaultProfileId(profileId);
+      setSuccessMessage(response.data.message);
       
-      if (selectedSetting.id) {
-        response = await axios.put(
-          `/api/admin/tinymce-settings/${selectedSetting.id}`,
-          settingData,
-          { headers: { Authorization: `Bearer ${token}` } }
-        );
+      // Clear any existing timeout
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+      
+      // Set new timeout
+      timeoutRef.current = setTimeout(() => setSuccessMessage(''), 3000);
+    } catch (error) {
+      setError(error.response?.data?.error || 'Failed to set default profile');
+    } finally {
+      setIsSettingDefault(false);
+    }
+  };
+
+  const handleCreate = () => {
+    setSelectedProfile(null);
+    setShowEditor(true);
+  };
+
+  const handleEdit = async (profile) => {
+    try {
+      // Get full profile details
+      const fullProfile = await profileService.getById(profile.id);
+      setSelectedProfile(fullProfile);
+      setShowEditor(true);
+    } catch (err) {
+      setError(err.message || 'Failed to load profile details');
+    }
+  };
+
+  const handleSave = async (profileData) => {
+    try {
+      if (selectedProfile) {
+        await profileService.update(selectedProfile.id, profileData);
+        setSuccessMessage('Profile updated successfully');
       } else {
-        response = await axios.post(
-          '/api/admin/tinymce-settings',
-          settingData,
-          { headers: { Authorization: `Bearer ${token}` } }
-        );
+        await profileService.create(profileData);
+        setSuccessMessage('Profile created successfully');
       }
       
-      setSuccessMessage('Settings saved successfully!');
-      setEditMode(false);
-      fetchSettings();
-      setSelectedSetting(response.data);
+      setShowEditor(false);
+      loadProfiles();
       
       // Clear any existing timeout
       if (timeoutRef.current) {
@@ -116,166 +110,121 @@ const TinymceSettings = ({ setIsAuthenticated }) => {
       // Set new timeout
       timeoutRef.current = setTimeout(() => setSuccessMessage(''), 3000);
     } catch (err) {
-      console.error('Error saving settings:', err);
-      setError(err.response?.data?.error || 'Failed to save settings');
+      setError(err.message || 'Failed to save profile');
     }
   };
 
-  const handleDuplicate = async () => {
-    try {
-      const token = localStorage.getItem('token');
-      const response = await axios.post(
-        `/api/admin/tinymce-settings/${selectedSetting.id}/duplicate`,
-        { name: `${selectedSetting.name} (Copy)` },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-      
-      setSuccessMessage('Settings duplicated successfully!');
-      fetchSettings();
-      setSelectedSetting(response.data);
-      
-      // Clear any existing timeout
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current);
-      }
-      
-      // Set new timeout
-      timeoutRef.current = setTimeout(() => setSuccessMessage(''), 3000);
-    } catch (err) {
-      console.error('Error duplicating settings:', err);
-      setError(err.response?.data?.error || 'Failed to duplicate settings');
-    }
-  };
-
-  const handleDelete = async () => {
-    if (!window.confirm('Are you sure you want to delete this setting?')) {
+  const handleDelete = async (profile) => {
+    if (profile.isLocked) {
+      setError('This profile is locked and cannot be deleted');
       return;
     }
     
-    try {
-      const token = localStorage.getItem('token');
-      await axios.delete(
-        `/api/admin/tinymce-settings/${selectedSetting.id}`,
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-      
-      setSuccessMessage('Settings deleted successfully!');
-      setSelectedSetting(null);
-      fetchSettings();
-      
-      // Clear any existing timeout
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current);
-      }
-      
-      // Set new timeout
-      timeoutRef.current = setTimeout(() => setSuccessMessage(''), 3000);
-    } catch (err) {
-      console.error('Error deleting settings:', err);
-      setError(err.response?.data?.error || 'Failed to delete settings');
+    if (profile.isPreset) {
+      setError('System preset profiles cannot be deleted');
+      return;
     }
-  };
 
-  const handleExport = async () => {
-    try {
-      const token = localStorage.getItem('token');
-      const response = await axios.get(
-        `/api/admin/tinymce-settings/${selectedSetting.id}/export`,
-        { 
-          headers: { Authorization: `Bearer ${token}` },
-          responseType: 'blob'
+    if (window.confirm(`Are you sure you want to delete "${profile.name}"?`)) {
+      try {
+        await profileService.delete(profile.id);
+        setSuccessMessage('Profile deleted successfully');
+        loadProfiles();
+        
+        // Clear any existing timeout
+        if (timeoutRef.current) {
+          clearTimeout(timeoutRef.current);
         }
-      );
-      
-      const url = window.URL.createObjectURL(new Blob([response.data]));
-      const link = document.createElement('a');
-      link.href = url;
-      link.setAttribute('download', `${selectedSetting.name.replace(/[^a-z0-9]/gi, '_')}_tinymce_settings.json`);
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
-      
-      setSuccessMessage('Settings exported successfully!');
-      
-      // Clear any existing timeout
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current);
+        
+        // Set new timeout
+        timeoutRef.current = setTimeout(() => setSuccessMessage(''), 3000);
+      } catch (err) {
+        setError(err.message || 'Failed to delete profile');
       }
-      
-      // Set new timeout
-      timeoutRef.current = setTimeout(() => setSuccessMessage(''), 3000);
-    } catch (err) {
-      console.error('Error exporting settings:', err);
-      setError('Failed to export settings');
     }
   };
 
-  const handleImport = async (file) => {
-    try {
-      const fileContent = await file.text();
-      const importData = JSON.parse(fileContent);
-      
-      const token = localStorage.getItem('token');
-      const response = await axios.post(
-        '/api/admin/tinymce-settings/import',
-        importData,
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-      
-      setSuccessMessage('Settings imported successfully!');
-      fetchSettings();
-      setSelectedSetting(response.data);
-      
-      // Clear any existing timeout
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current);
+  const handleDuplicate = async (profile) => {
+    const newName = prompt(`Enter a name for the duplicate of "${profile.name}":`, `${profile.name} (Copy)`);
+    if (newName && newName.trim()) {
+      try {
+        await profileService.duplicate(profile.id, newName.trim());
+        setSuccessMessage('Profile duplicated successfully');
+        loadProfiles();
+        
+        // Clear any existing timeout
+        if (timeoutRef.current) {
+          clearTimeout(timeoutRef.current);
+        }
+        
+        // Set new timeout
+        timeoutRef.current = setTimeout(() => setSuccessMessage(''), 3000);
+      } catch (err) {
+        setError(err.message || 'Failed to duplicate profile');
       }
-      
-      // Set new timeout
-      timeoutRef.current = setTimeout(() => setSuccessMessage(''), 3000);
-    } catch (err) {
-      console.error('Error importing settings:', err);
-      setError(err.response?.data?.error || 'Failed to import settings. Please check the file format.');
     }
   };
 
-  const handleSetDefault = async () => {
+  const handleViewConfig = async (profile) => {
     try {
-      const token = localStorage.getItem('token');
-      await axios.put(
-        `/api/admin/tinymce-settings/${selectedSetting.id}`,
-        { ...selectedSetting, isDefault: true },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
+      const config = await profileService.getConfig(profile.id);
+      const configJson = JSON.stringify(config, null, 2);
       
-      setSuccessMessage('Default settings updated!');
-      fetchSettings();
-      
-      // Clear any existing timeout
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current);
-      }
-      
-      // Set new timeout
-      timeoutRef.current = setTimeout(() => setSuccessMessage(''), 3000);
+      // Create a modal or new window to show the configuration
+      const configWindow = window.open('', '_blank', 'width=800,height=600');
+      configWindow.document.write(`
+        <html>
+          <head>
+            <title>TinyMCE Configuration - ${profile.name}</title>
+            <style>
+              body { font-family: monospace; padding: 20px; }
+              pre { background: #f5f5f5; padding: 15px; border-radius: 5px; overflow: auto; }
+              .copy-btn { margin-bottom: 10px; padding: 5px 15px; background: #007bff; color: white; border: none; border-radius: 3px; cursor: pointer; }
+              .copy-btn:hover { background: #0056b3; }
+            </style>
+          </head>
+          <body>
+            <h2>TinyMCE Configuration for "${profile.name}"</h2>
+            <button class="copy-btn" onclick="navigator.clipboard.writeText(document.querySelector('pre').textContent)">Copy Configuration</button>
+            <pre>${configJson}</pre>
+          </body>
+        </html>
+      `);
     } catch (err) {
-      console.error('Error setting default:', err);
-      setError('Failed to set as default');
+      setError(err.message || 'Failed to get configuration');
     }
   };
+
+  if (showEditor) {
+    return (
+      <AdminLayout setIsAuthenticated={setIsAuthenticated}>
+        <div className="tinymce-settings">
+          <TinymceProfileEditor
+            profile={selectedProfile}
+            onSave={handleSave}
+            onCancel={() => setShowEditor(false)}
+          />
+        </div>
+      </AdminLayout>
+    );
+  }
 
   return (
     <AdminLayout setIsAuthenticated={setIsAuthenticated}>
       <div className="tinymce-settings">
         <div className="page-header">
-          <h2>TinyMCE Editor Settings</h2>
-          <p>Configure and manage editor presets for different use cases</p>
+          <h2>TinyMCE Configuration</h2>
+          <button className="btn-primary" onClick={handleCreate}>
+            Create New Profile
+          </button>
         </div>
 
         {error && (
           <div className="alert alert-error">
             {error}
-            <button onClick={() => setError(null)} className="alert-close">×</button>
+            <button className="alert-close" onClick={() => setError('')}>
+              &times;
+            </button>
           </div>
         )}
 
@@ -286,120 +235,270 @@ const TinymceSettings = ({ setIsAuthenticated }) => {
         )}
 
         {loading ? (
-          <div className="loading-spinner">Loading settings...</div>
+          <div className="loading">Loading profiles...</div>
+        ) : profiles.length === 0 ? (
+          <div className="no-content">
+            <p>No profiles found.</p>
+            <button className="btn-primary" onClick={handleCreate}>
+              Create Your First Profile
+            </button>
+          </div>
         ) : (
-          <div className="settings-container">
-            <div className="settings-sidebar">
-              <SettingsList
-                settings={settings}
-                selectedSetting={selectedSetting}
-                onSelectSetting={handleSelectSetting}
-                onCreateNew={handleCreateNew}
-                onImport={handleImport}
-              />
-            </div>
-
-            <div className="settings-main">
-              {selectedSetting ? (
-                <>
-                  {editMode ? (
-                    <SettingsEditor
-                      setting={selectedSetting}
-                      onSave={handleSave}
-                      onCancel={() => setEditMode(false)}
-                    />
-                  ) : previewMode ? (
-                    <SettingsPreview
-                      setting={selectedSetting}
-                      onClose={() => setPreviewMode(false)}
-                    />
-                  ) : (
-                    <div className="settings-detail">
-                      <div className="detail-header">
-                        <h3>{selectedSetting.name}</h3>
-                        {selectedSetting.isDefault && (
-                          <span className="badge badge-primary">Default</span>
-                        )}
-                        {selectedSetting.isPreset && (
-                          <span className="badge badge-secondary">Preset</span>
-                        )}
-                      </div>
-
-                      <p className="detail-description">{selectedSetting.description}</p>
-
-                      {selectedSetting.tags && selectedSetting.tags.length > 0 && (
-                        <div className="detail-tags">
-                          {selectedSetting.tags.map((tag, index) => (
-                            <span key={index} className="tag">{tag}</span>
-                          ))}
-                        </div>
-                      )}
-
-                      <div className="detail-actions">
-                        <button
-                          onClick={handlePreview}
-                          className="btn btn-secondary"
-                        >
-                          Preview
-                        </button>
-                        
-                        {!selectedSetting.isPreset && (
-                          <>
-                            <button
-                              onClick={handleEdit}
-                              className="btn btn-primary"
-                            >
-                              Edit
-                            </button>
-                            
-                            {!selectedSetting.isDefault && (
-                              <button
-                                onClick={handleSetDefault}
-                                className="btn btn-secondary"
-                              >
-                                Set as Default
-                              </button>
-                            )}
-                            
-                            <button
-                              onClick={handleDelete}
-                              className="btn btn-danger"
-                            >
-                              Delete
-                            </button>
-                          </>
-                        )}
-                        
-                        <button
-                          onClick={handleDuplicate}
-                          className="btn btn-secondary"
-                        >
-                          Duplicate
-                        </button>
-                        
-                        <button
-                          onClick={handleExport}
-                          className="btn btn-secondary"
-                        >
-                          Export
-                        </button>
-                      </div>
-
-                      <div className="settings-json">
-                        <h4>Configuration</h4>
-                        <pre>{JSON.stringify(selectedSetting.settings, null, 2)}</pre>
-                      </div>
+          <div className="profiles-section">
+            <h3>Editor Profiles</h3>
+            <p className="section-description">
+              Manage TinyMCE editor profiles for different content types and user roles.
+            </p>
+            
+            <div className="profiles-grid">
+              {profiles.map(profile => (
+                <div key={profile.id} className="profile-card">
+                  <div className="profile-header">
+                    <h4>{profile.name}</h4>
+                    {profile.isDefault && (
+                      <span className="badge badge-primary">Default</span>
+                    )}
+                    {profile.isPreset && (
+                      <span className="badge badge-secondary">System</span>
+                    )}
+                    {profile.isLocked && (
+                      <span className="badge badge-warning">Locked</span>
+                    )}
+                  </div>
+                  
+                  <p className="profile-description">{profile.description || 'No description'}</p>
+                  
+                  <div className="profile-meta">
+                    <span className="meta-item">
+                      <strong>Type:</strong> {profile.profileType}
+                    </span>
+                    <span className="meta-item">
+                      <strong>Priority:</strong> {profile.priority}
+                    </span>
+                  </div>
+                  
+                  {profile.tags && profile.tags.length > 0 && (
+                    <div className="profile-tags">
+                      {profile.tags.map((tag, index) => (
+                        <span key={index} className="tag">{tag}</span>
+                      ))}
                     </div>
                   )}
-                </>
-              ) : (
-                <div className="no-selection">
-                  <p>Select a setting from the list or create a new one</p>
+                  
+                  <div className="profile-actions">
+                    <button
+                      className="btn-sm btn-secondary"
+                      onClick={() => handleViewConfig(profile)}
+                      title="View compiled configuration"
+                    >
+                      View Config
+                    </button>
+                    <button
+                      className="btn-sm btn-primary"
+                      onClick={() => handleEdit(profile)}
+                    >
+                      Edit
+                    </button>
+                    <button
+                      className="btn-sm btn-secondary"
+                      onClick={() => handleDuplicate(profile)}
+                      title="Create a copy of this profile"
+                    >
+                      Duplicate
+                    </button>
+                    {!profile.isPreset && !profile.isLocked && (
+                      <button
+                        className="btn-sm btn-danger"
+                        onClick={() => handleDelete(profile)}
+                      >
+                        Delete
+                      </button>
+                    )}
+                    <button
+                      className={`btn-sm ${defaultProfileId === profile.id ? 'btn-success' : 'btn-outline'}`}
+                      onClick={() => handleSetDefaultProfile(profile.id)}
+                      disabled={isSettingDefault || defaultProfileId === profile.id}
+                      title={defaultProfileId === profile.id ? "This is the default profile for all content types" : "Set as default for all content types"}
+                    >
+                      {defaultProfileId === profile.id ? '✓ Default' : 'Set Default'}
+                    </button>
+                  </div>
                 </div>
-              )}
+              ))}
             </div>
           </div>
         )}
+        
+        <style>{`
+          .tinymce-settings {
+            padding: 20px;
+          }
+          
+          .profiles-section {
+            margin-top: 30px;
+          }
+          
+          .section-description {
+            color: #666;
+            margin-bottom: 20px;
+          }
+          
+          .profiles-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 20px;
+          }
+          
+          .profile-card {
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 20px;
+            transition: box-shadow 0.2s;
+          }
+          
+          .profile-card:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+          }
+          
+          .profile-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+          }
+          
+          .profile-header h4 {
+            margin: 0;
+            font-size: 18px;
+            color: #333;
+          }
+          
+          .badge {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 500;
+          }
+          
+          .badge-primary {
+            background: #007bff;
+            color: white;
+          }
+          
+          .badge-secondary {
+            background: #6c757d;
+            color: white;
+          }
+          
+          .badge-warning {
+            background: #ffc107;
+            color: #212529;
+          }
+          
+          .profile-description {
+            color: #666;
+            margin-bottom: 15px;
+            font-size: 14px;
+          }
+          
+          .profile-meta {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 15px;
+            font-size: 13px;
+          }
+          
+          .meta-item {
+            color: #666;
+          }
+          
+          .meta-item strong {
+            color: #333;
+          }
+          
+          .profile-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            margin-bottom: 15px;
+          }
+          
+          .tag {
+            background: #f0f0f0;
+            padding: 3px 8px;
+            border-radius: 3px;
+            font-size: 12px;
+            color: #666;
+          }
+          
+          .profile-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 15px;
+          }
+          
+          .btn-sm {
+            padding: 5px 15px;
+            font-size: 13px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+          }
+          
+          .btn-primary {
+            background: #007bff;
+            color: white;
+          }
+          
+          .btn-primary:hover {
+            background: #0056b3;
+          }
+          
+          .btn-secondary {
+            background: #6c757d;
+            color: white;
+          }
+          
+          .btn-secondary:hover {
+            background: #5a6268;
+          }
+          
+          .btn-danger {
+            background: #dc3545;
+            color: white;
+          }
+          
+          .btn-danger:hover {
+            background: #c82333;
+          }
+          
+          .btn-success {
+            background: #28a745;
+            color: white;
+          }
+          
+          .btn-success:hover {
+            background: #218838;
+          }
+          
+          .btn-outline {
+            background: white;
+            color: #6c757d;
+            border: 1px solid #6c757d;
+          }
+          
+          .btn-outline:hover {
+            background: #f8f9fa;
+          }
+          
+          .btn-sm:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+          }
+        `}</style>
       </div>
     </AdminLayout>
   );

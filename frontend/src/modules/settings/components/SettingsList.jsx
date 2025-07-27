@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import './SettingsList.css';
 
 const SettingsList = ({ settings, selectedSetting, onSelectSetting, onCreateNew, onImport }) => {
   const [searchTerm, setSearchTerm] = useState('');

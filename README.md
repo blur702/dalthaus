@@ -314,11 +314,12 @@ npm start
 - Cover images display between title and content on article/photobook detail pages
 
 ### Public Frontend
-- Standalone public-facing website on port 3000
-- Displays published articles and photo books
+- Integrated into React frontend on port 5173
+- Displays published articles and photo books  
 - Full-size cover image support
 - Static file serving for uploaded images
 - Responsive design with clean layout
+- Template-based home page with 2/3 - 1/3 layout
 
 ## License
 

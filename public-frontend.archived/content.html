@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Content - Don Althaus Photography</title>
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    /* Content page specific styles */
+    .site-header {
+      background-size: cover;
+      background-position: center;
+      padding: 2rem;
+      color: white;
+      min-height: 200px;
+    }
+    
+    .site-header.header-compact {
+      min-height: 150px;
+    }
+    
+    .site-header h1 {
+      font-size: 2rem;
+    }
+    
+    .site-header .site-subtitle {
+      font-size: 1rem;
+      opacity: 0.9;
+    }
+    
+    .content-container {
+      display: flex;
+      padding: 2rem;
+      max-width: 1200px;
+      margin: 0 auto;
+      gap: 2rem;
+    }
+    
+    .main-content {
+      flex: 2;
+      min-width: 0;
+    }
+    
+    .main-content h1 {
+      font-size: 2.5rem;
+      margin-bottom: 1.5rem;
+    }
+    
+    .main-content p {
+      margin-bottom: 1rem;
+      line-height: 1.6;
+    }
+    
+    .contents-sidebar {
+      flex: 1;
+      border-left: 1px solid #ccc;
+      padding-left: 2rem;
+      position: sticky;
+      top: 20px;
+      height: fit-content;
+    }
+    
+    .contents-sidebar h2 {
+      font-size: 1.25rem;
+      margin-bottom: 1rem;
+    }
+    
+    .contents-sidebar ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    
+    .contents-sidebar li {
+      margin-bottom: 0.5rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid #eee;
+    }
+    
+    .contents-sidebar li:last-child {
+      border-bottom: none;
+    }
+    
+    .contents-sidebar a {
+      color: #0066cc;
+      text-decoration: none;
+    }
+    
+    .contents-sidebar a:hover {
+      text-decoration: underline;
+    }
+    
+    @media (max-width: 768px) {
+      .content-container {
+        flex-direction: column;
+      }
+      
+      .contents-sidebar {
+        border-left: none;
+        border-top: 1px solid #ccc;
+        padding-left: 0;
+        padding-top: 2rem;
+        margin-top: 2rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <header class="site-header header-compact">
+    <div class="header-content">
+      <h1 class="site-title">Don Althaus</h1>
+      <p class="site-subtitle mission-text">Effective storytelling is truly the heart and soul of photography.</p>
+    </div>
+  </header>
+
+  <!-- Navigation -->
+  <nav class="main-navigation">
+    <ul>
+      <li><a href="index.html">Home</a></li>
+      <li><a href="articles.html" class="active">Articles</a></li>
+      <li><a href="photobooks.html">Photo Books</a></li>
+      <li><a href="contents.html">Contents</a></li>
+      <li><a href="about.html">About</a></li>
+    </ul>
+  </nav>
+
+  <!-- Main Content -->
+  <div class="content-container">
+    <main class="main-content">
+      <article>
+        <h1>Lorem Ipsum Is The Best English Dummy Text Ever Devised In Latin</h1>
+        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Euismod est urna, morbi amet, mauris faucibus. Ornare duis porttitor mauris mauris donec accumsan.</p>
+        <p>Fusce felis ipsum purus, et sed. Amet, orci, molestie et turpis morbi nisl condimentum sagittis. Sagittis semper in laoreet sed commodo tempor nulla ut volutpat.</p>
+        <p>Neque odio lacus, vitae imperdiet mauris velit nec. Sit odio ornare at malesuada mauris quam. Viverra sed feugiat viverra nunc, mauris molestie tortor, feugiat. Cursus duis egestas ut morbi in eleifend.</p>
+        <p>Pharetra, donec sed consectetur nunc etiam integer tellus ut risus. Id commodo tellus eget amet nam dui tellus. Ac lorem in semper viverra. Duis at mauris porttitor pellentesque eget sit. Pulvinar morbi consectetur vel ut. Blandit volutpat velit, tortor at nulla. Lectus non duis ornare odio velit aliquet nulla lectus vel.</p>
+        <p>Aliquam, orci, nisi, vel ut feugiat nullam ac sed. Volutpat nibh ut volutpat lorem cras semper. Mauris vitae enim morbi odio volutpat massa nunc elementum feugiat. Blandit tristique tortor tellus ipsum massa sed faucibus velit. Facilisi eu, pellentesque elit, vel sed gravida non. Id feugiat tortor amet mauris. Vitae magna massa nisl vel velit enim.</p>
+      </article>
+    </main>
+
+    <aside class="contents-sidebar sidebar">
+      <h2 class="sidebar-title">Contents</h2>
+      <ul>
+        <li><a href="#">Telling the Subject's Story As Completely As Possible</a></li>
+        <li><a href="#">Your Smartphone Camera Is Perfect For Storytelling</a></li>
+        <li><a href="#">Brief Read: The Organizing Questions</a></li>
+        <li><a href="#">Brief Read - The Practical Details</a></li>
+        <li><a href="#">The Practice Of Pure Photography</a></li>
+        <li><a href="#">How I Learned To Stop Worrying And Love JPEG</a></li>
+        <li><a href="#">The Joy Of Getting It Right In The Camera</a></li>
+        <li><a href="#">Make Adjustment Easier On You And Your Subject</a></li>
+        <li><a href="#">Fill in the blank (with my camera)</a></li>
+        <li><a href="#">Route 66 - Still America's Mother Road</a></li>
+        <li><a href="#">Boom and Bust Together</a></li>
+        <li><a href="#">Arizona's Ghost Town Trail</a></li>
+        <li><a href="#">The Anonymous Ghost Town</a></li>
+        <li><a href="#">A Year At The Mall</a></li>
+      </ul>
+    </aside>
+  </div>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <div class="container">
+      <p>&copy; 2025 Don Althaus Photography. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <script src="js/maintenance-check.js"></script>
+    <script src="js/main.js"></script>
+  <script src="js/template-loader.js"></script>
+  <script src="js/admin-toolbar.js"></script>
+  <script>
+    // Override template type for content pages
+    if (window.TemplateLoader) {
+      window.TemplateLoader.loadActiveTemplate('content_page');
+    }
+  </script>
+</body>
+</html>

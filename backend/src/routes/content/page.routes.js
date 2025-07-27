@@ -7,8 +7,8 @@ const { protect, isAdmin } = require('../../middleware/auth.middleware');
 router.get('/', pageController.getAll);
 router.get('/menu', pageController.getMenuPages);
 router.get('/hierarchy', pageController.getHierarchy);
-router.get('/:id', pageController.getById);
-router.get('/slug/:slug', pageController.getBySlug);
+router.get('/by-id/:id', pageController.getById);
+router.get('/:slug', pageController.getBySlug);
 
 // Protected routes (require authentication and admin role)
 router.use(protect, isAdmin);

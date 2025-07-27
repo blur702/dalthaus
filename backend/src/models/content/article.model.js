@@ -47,6 +47,16 @@ class Article {
       contentType: 'article'
     }, options);
   }
+
+  static async count(options = {}) {
+    return BaseContent.count({
+      ...options,
+      where: {
+        ...options.where,
+        contentType: 'article'
+      }
+    });
+  }
 }
 
 module.exports = Article;

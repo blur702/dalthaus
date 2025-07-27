@@ -1,6 +1,55 @@
 import React, { useState, useEffect } from 'react';
+import {
+  Box,
+  TextField,
+  Button,
+  Select,
+  MenuItem,
+  FormControl,
+  InputLabel,
+  Paper,
+  Typography,
+  Chip,
+  FormControlLabel,
+  Checkbox,
+  Grid,
+  Alert,
+  IconButton,
+  FormHelperText,
+  InputAdornment,
+  Divider
+} from '@mui/material';
+import { styled } from '@mui/material/styles';
+import DeleteIcon from '@mui/icons-material/Delete';
+import UploadIcon from '@mui/icons-material/Upload';
 import RichTextEditor from '../../../components/RichTextEditor';
 import DocumentUpload from '../../../components/DocumentUpload';
+
+const StyledPaper = styled(Paper)(({ theme }) => ({
+  padding: theme.spacing(3),
+  marginBottom: theme.spacing(2),
+}));
+
+const ImagePreview = styled(Box)(({ theme }) => ({
+  marginTop: theme.spacing(2),
+  padding: theme.spacing(2),
+  backgroundColor: theme.palette.grey[100],
+  borderRadius: theme.shape.borderRadius,
+  '& img': {
+    maxWidth: '200px',
+    maxHeight: '150px',
+    objectFit: 'cover',
+    border: `1px solid ${theme.palette.divider}`,
+    display: 'block',
+  }
+}));
+
+const TagsContainer = styled(Box)(({ theme }) => ({
+  display: 'flex',
+  flexWrap: 'wrap',
+  gap: theme.spacing(1),
+  marginTop: theme.spacing(1),
+}));
 
 const ContentEditor = ({ content, contentType, onSave, onCancel }) => {
   const [formData, setFormData] = useState({
@@ -8,12 +57,15 @@ const ContentEditor = ({ content, contentType, onSave, onCancel }) => {
     slug: '',
     body: '',
     status: 'draft',
-    coverImageUrl: '',
+    featuredImage: '',
+    featuredImageAlt: '',
+    summary: '',
+    teaserImage: '',
+    teaserImageAlt: '',
     // Article specific
     excerpt: '',
     category: '',
     tags: [],
-    featuredImage: '',
     // Page specific
     template: 'default',
     parentId: null,
@@ -26,6 +78,7 @@ const ContentEditor = ({ content, contentType, onSave, onCancel }) => {
 
   const [errors, setErrors] = useState({});
   const [tagInput, setTagInput] = useState('');
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (content) {
@@ -92,28 +145,28 @@ const ContentEditor = ({ content, contentType, onSave, onCancel }) => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleCoverImageUpload = async (e) => {
+  const handleFeaturedImageUpload = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
 
-    const formData = new FormData();
-    formData.append('image', file);
+    const uploadFormData = new FormData();
+    uploadFormData.append('image', file);
 
     try {
+      setLoading(true);
       const token = localStorage.getItem('token');
       const response = await fetch('http://localhost:5001/api/upload/image', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`
         },
-        body: formData
+        body: uploadFormData
       });
 
       if (response.ok) {
         const data = await response.json();
-        // Keep the path as returned by the server
         const imageUrl = data.url;
-        setFormData(prev => ({ ...prev, coverImageUrl: imageUrl }));
+        setFormData(prev => ({ ...prev, featuredImage: imageUrl }));
         console.log('Image uploaded successfully:', imageUrl);
       } else {
         console.error('Upload failed:', response.status);
@@ -124,6 +177,45 @@ const ContentEditor = ({ content, contentType, onSave, onCancel }) => {
     } catch (error) {
       console.error('Upload error:', error);
       alert('Failed to upload image. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleTeaserImageUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const uploadFormData = new FormData();
+    uploadFormData.append('image', file);
+
+    try {
+      setLoading(true);
+      const token = localStorage.getItem('token');
+      const response = await fetch('http://localhost:5001/api/upload/image', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        },
+        body: uploadFormData
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        const imageUrl = data.url;
+        setFormData(prev => ({ ...prev, teaserImage: imageUrl }));
+        console.log('Teaser image uploaded successfully:', imageUrl);
+      } else {
+        console.error('Upload failed:', response.status);
+        const errorData = await response.text();
+        console.error('Error details:', errorData);
+        alert('Failed to upload teaser image. Please try again.');
+      }
+    } catch (error) {
+      console.error('Upload error:', error);
+      alert('Failed to upload teaser image. Please try again.');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -131,13 +223,12 @@ const ContentEditor = ({ content, contentType, onSave, onCancel }) => {
     e.preventDefault();
     
     if (validateForm()) {
-      // Filter out fields not relevant to the content type
       const dataToSave = { ...formData };
       
-      // Debug log
       console.log('Submitting form data:', dataToSave);
-      console.log('Cover Image URL:', dataToSave.coverImageUrl);
+      console.log('Featured Image URL:', dataToSave.featuredImage);
       
+      // Clean up data based on content type - but keep summary and teaserImage for all types
       if (contentType === 'article') {
         delete dataToSave.template;
         delete dataToSave.parentId;
@@ -149,20 +240,18 @@ const ContentEditor = ({ content, contentType, onSave, onCancel }) => {
         delete dataToSave.excerpt;
         delete dataToSave.category;
         delete dataToSave.tags;
-        delete dataToSave.featuredImage;
         delete dataToSave.coverImage;
         delete dataToSave.photoCount;
-        // Pages might not support coverImageUrl
-        delete dataToSave.coverImageUrl;
       } else if (contentType === 'photoBook') {
         delete dataToSave.excerpt;
         delete dataToSave.category;
         delete dataToSave.tags;
-        delete dataToSave.featuredImage;
         delete dataToSave.template;
         delete dataToSave.parentId;
         delete dataToSave.order;
         delete dataToSave.showInMenu;
+        delete dataToSave.coverImage;
+        delete dataToSave.photoCount;
       }
       
       console.log('Data being saved:', dataToSave);
@@ -171,270 +260,379 @@ const ContentEditor = ({ content, contentType, onSave, onCancel }) => {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="content-editor">
-      <div className="editor-header">
-        <h3>{content ? 'Edit' : 'Create'} {contentType}</h3>
-      </div>
+    <Box component="form" onSubmit={handleSubmit}>
+      <StyledPaper elevation={1}>
+        <Typography variant="h5" component="h3" gutterBottom>
+          {content ? 'Edit' : 'Create'} {contentType}
+        </Typography>
 
-      <div className="form-row">
-        <div className="form-group flex-2">
-          <label htmlFor="title">Title *</label>
-          <input
-            type="text"
-            id="title"
-            name="title"
-            value={formData.title}
-            onChange={handleChange}
-            onBlur={handleSlugGeneration}
-            className={errors.title ? 'error' : ''}
-          />
-          {errors.title && <span className="error-message">{errors.title}</span>}
-        </div>
-
-        <div className="form-group flex-1">
-          <label htmlFor="slug">Slug</label>
-          <input
-            type="text"
-            id="slug"
-            name="slug"
-            value={formData.slug}
-            onChange={handleChange}
-            placeholder="auto-generated"
-          />
-        </div>
-      </div>
-
-      {(contentType === 'article' || contentType === 'photoBook') && (
-        <div className="form-group">
-          <label htmlFor="coverImageUrl">Cover Image</label>
-          <div className="image-upload-container">
-            <input
-              type="text"
-              id="coverImageUrl"
-              name="coverImageUrl"
-              value={formData.coverImageUrl}
+        <Grid container spacing={3}>
+          {/* Title - Full width on its own line */}
+          <Grid size={12}>
+            <TextField
+              label="Title"
+              name="title"
+              value={formData.title}
               onChange={handleChange}
-              placeholder="https://example.com/image.jpg"
-              style={{ marginBottom: '10px' }}
+              onBlur={handleSlugGeneration}
+              error={!!errors.title}
+              helperText={errors.title}
+              fullWidth
+              required
+              variant="outlined"
             />
-            <div className="upload-controls">
-              <input
-                type="file"
-                id="coverImageFile"
-                accept="image/*"
-                onChange={handleCoverImageUpload}
-                style={{ display: 'none' }}
-              />
-              <button
-                type="button"
-                onClick={() => document.getElementById('coverImageFile').click()}
-                className="btn-upload"
-                style={{ marginRight: '10px' }}
-              >
-                Upload Image
-              </button>
-              {formData.coverImageUrl && (
-                <button
-                  type="button"
-                  onClick={() => setFormData(prev => ({ ...prev, coverImageUrl: '' }))}
-                  className="btn-remove"
-                >
-                  Remove
-                </button>
-              )}
-            </div>
-            {formData.coverImageUrl && (
-              <div className="image-preview" style={{ marginTop: '10px', padding: '10px', backgroundColor: '#f5f5f5', borderRadius: '4px' }}>
-                <p style={{ marginBottom: '5px', fontSize: '14px', color: '#666' }}>Preview:</p>
-                <img 
-                  src={formData.coverImageUrl.startsWith('http') ? formData.coverImageUrl : `${window.location.origin}${formData.coverImageUrl}`} 
-                  alt="Cover preview" 
-                  style={{ maxWidth: '200px', maxHeight: '150px', objectFit: 'cover', border: '1px solid #ddd', display: 'block' }}
-                  onError={(e) => { 
-                    console.error('Preview image failed to load:', formData.coverImageUrl);
-                    e.target.style.display = 'none'; 
-                  }}
-                />
-              </div>
-            )}
-          </div>
-        </div>
-      )}
+          </Grid>
 
-      {contentType === 'article' && (
-        <>
-          <div className="form-row">
-            <div className="form-group flex-1">
-              <label htmlFor="category">Category</label>
-              <input
-                type="text"
-                id="category"
-                name="category"
-                value={formData.category}
-                onChange={handleChange}
-              />
-            </div>
-
-            <div className="form-group flex-1">
-              <label htmlFor="featuredImage">Featured Image URL</label>
-              <input
-                type="text"
-                id="featuredImage"
+          {/* Featured Image - Full width on its own line */}
+          {(contentType === 'article' || contentType === 'photoBook') && (
+            <Grid size={12}>
+              <TextField
+                label="Featured Image"
                 name="featuredImage"
                 value={formData.featuredImage}
                 onChange={handleChange}
+                placeholder="https://example.com/image.jpg or upload an image"
+                fullWidth
+                variant="outlined"
+                helperText="Main image displayed on the content detail page"
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <input
+                        type="file"
+                        id="featuredImageFile"
+                        accept="image/*"
+                        onChange={handleFeaturedImageUpload}
+                        style={{ display: 'none' }}
+                      />
+                      <label htmlFor="featuredImageFile">
+                        <IconButton
+                          component="span"
+                          disabled={loading}
+                          color="primary"
+                        >
+                          <UploadIcon />
+                        </IconButton>
+                      </label>
+                      {formData.featuredImage && (
+                        <IconButton
+                          onClick={() => setFormData(prev => ({ ...prev, featuredImage: '' }))}
+                          color="error"
+                        >
+                          <DeleteIcon />
+                        </IconButton>
+                      )}
+                    </InputAdornment>
+                  ),
+                }}
               />
-            </div>
-          </div>
+              {formData.featuredImage && (
+                <ImagePreview>
+                  <Typography variant="body2" color="text.secondary" gutterBottom>
+                    Preview:
+                  </Typography>
+                  <img
+                    src={formData.featuredImage.startsWith('http') ? formData.featuredImage : `http://localhost:5001${formData.featuredImage}`}
+                    alt="Featured image preview"
+                    onError={(e) => {
+                      console.error('Preview image failed to load:', formData.featuredImage);
+                      e.target.style.display = 'none';
+                    }}
+                  />
+                </ImagePreview>
+              )}
+            </Grid>
+          )}
 
-          <div className="form-group">
-            <label htmlFor="excerpt">Excerpt</label>
-            <textarea
-              id="excerpt"
-              name="excerpt"
-              value={formData.excerpt}
-              onChange={handleChange}
-              rows="3"
-            />
-          </div>
-
-          <div className="form-group">
-            <label>Tags</label>
-            <div className="tags-input">
-              <input
-                type="text"
-                value={tagInput}
-                onChange={(e) => setTagInput(e.target.value)}
-                onKeyDown={handleTagAdd}
-                placeholder="Press Enter to add tag"
-              />
-              <div className="tags-list">
-                {formData.tags.map(tag => (
-                  <span key={tag} className="tag">
-                    {tag}
-                    <button type="button" onClick={() => removeTag(tag)}>×</button>
-                  </span>
-                ))}
-              </div>
-            </div>
-          </div>
-        </>
-      )}
-
-      {contentType === 'page' && (
-        <div className="form-row">
-          <div className="form-group flex-1">
-            <label htmlFor="template">Template</label>
-            <select
-              id="template"
-              name="template"
-              value={formData.template}
-              onChange={handleChange}
-            >
-              <option value="default">Default</option>
-              <option value="full-width">Full Width</option>
-              <option value="sidebar">With Sidebar</option>
-            </select>
-          </div>
-
-          <div className="form-group flex-1">
-            <label htmlFor="order">Order</label>
-            <input
-              type="number"
-              id="order"
-              name="order"
-              value={formData.order}
-              onChange={handleChange}
-            />
-          </div>
-
-          <div className="form-group flex-1">
-            <label>
-              <input
-                type="checkbox"
-                name="showInMenu"
-                checked={formData.showInMenu}
+          {/* Featured Image Alt Text */}
+          {(contentType === 'article' || contentType === 'photoBook') && formData.featuredImage && (
+            <Grid size={12}>
+              <TextField
+                label="Featured Image Alt Text"
+                name="featuredImageAlt"
+                value={formData.featuredImageAlt}
                 onChange={handleChange}
+                fullWidth
+                variant="outlined"
+                placeholder="Describe the featured image for accessibility"
+                helperText="Alternative text for screen readers and when image cannot be displayed"
               />
-              Show in Menu
-            </label>
-          </div>
-        </div>
-      )}
+            </Grid>
+          )}
 
-      {contentType === 'photoBook' && (
-        <div className="form-row">
-          <div className="form-group flex-1">
-            <label htmlFor="coverImage">Cover Image URL</label>
-            <input
-              type="text"
-              id="coverImage"
-              name="coverImage"
-              value={formData.coverImage}
+          {/* Summary - Full width on its own line */}
+          <Grid size={12}>
+            <TextField
+              label="Summary"
+              name="summary"
+              value={formData.summary}
               onChange={handleChange}
+              multiline
+              rows={3}
+              fullWidth
+              variant="outlined"
+              placeholder="Brief description for listing pages"
+              helperText="This summary will be displayed on listing pages instead of the full content"
             />
-          </div>
+          </Grid>
 
-          <div className="form-group flex-1">
-            <label htmlFor="photoCount">Photo Count</label>
-            <input
-              type="number"
-              id="photoCount"
-              name="photoCount"
-              value={formData.photoCount}
+          {/* Teaser Image - Full width on its own line */}
+          <Grid size={12}>
+            <TextField
+              label="Teaser Image"
+              name="teaserImage"
+              value={formData.teaserImage}
               onChange={handleChange}
-              min="0"
+              placeholder="https://example.com/teaser.jpg or upload an image"
+              fullWidth
+              variant="outlined"
+              helperText="Image displayed on listing pages (if different from featured image)"
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <input
+                      type="file"
+                      id="teaserImageFile"
+                      accept="image/*"
+                      onChange={handleTeaserImageUpload}
+                      style={{ display: 'none' }}
+                    />
+                    <label htmlFor="teaserImageFile">
+                      <IconButton
+                        component="span"
+                        disabled={loading}
+                        color="primary"
+                      >
+                        <UploadIcon />
+                      </IconButton>
+                    </label>
+                    {formData.teaserImage && (
+                      <IconButton
+                        onClick={() => setFormData(prev => ({ ...prev, teaserImage: '' }))}
+                        color="error"
+                      >
+                        <DeleteIcon />
+                      </IconButton>
+                    )}
+                  </InputAdornment>
+                ),
+              }}
             />
-          </div>
-        </div>
-      )}
+            {formData.teaserImage && (
+              <ImagePreview>
+                <Typography variant="body2" color="text.secondary" gutterBottom>
+                  Teaser Preview:
+                </Typography>
+                <img
+                  src={formData.teaserImage.startsWith('http') ? formData.teaserImage : `http://localhost:5001${formData.teaserImage}`}
+                  alt="Teaser image preview"
+                  onError={(e) => {
+                    console.error('Teaser preview image failed to load:', formData.teaserImage);
+                    e.target.style.display = 'none';
+                  }}
+                />
+              </ImagePreview>
+            )}
+          </Grid>
 
-      <div className="form-group">
-        <label htmlFor="body">Content *</label>
-        <DocumentUpload
-          onContentLoaded={(htmlContent) => {
-            // Append the converted content to existing content
-            setFormData(prev => ({ 
-              ...prev, 
-              body: prev.body + htmlContent 
-            }));
-          }}
-          allowedTags={['p', 'br', 'span', 'div', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
-            'ul', 'ol', 'li', 'strong', 'b', 'em', 'i', 'u', 's', 'strike',
-            'a', 'img', 'blockquote', 'code', 'pre', 'table', 'thead', 'tbody',
-            'tfoot', 'tr', 'td', 'th', 'caption', 'sup', 'sub', 'hr']}
-        />
-        <RichTextEditor
-          value={formData.body}
-          onChange={(content) => setFormData(prev => ({ ...prev, body: content }))}
-          height={400}
-        />
-        {errors.body && <span className="error-message">{errors.body}</span>}
-      </div>
+          {/* Teaser Image Alt Text */}
+          {formData.teaserImage && (
+            <Grid size={12}>
+              <TextField
+                label="Teaser Image Alt Text"
+                name="teaserImageAlt"
+                value={formData.teaserImageAlt}
+                onChange={handleChange}
+                fullWidth
+                variant="outlined"
+                placeholder="Describe the teaser image for accessibility"
+                helperText="Alternative text for screen readers and when image cannot be displayed"
+              />
+            </Grid>
+          )}
 
-      <div className="form-group">
-        <label htmlFor="status">Status</label>
-        <select
-          id="status"
-          name="status"
-          value={formData.status}
-          onChange={handleChange}
+          {/* URL Alias (Slug) - Full width on its own line */}
+          <Grid size={12}>
+            <TextField
+              label="URL Alias"
+              name="slug"
+              value={formData.slug}
+              onChange={handleChange}
+              placeholder="auto-generated from title"
+              fullWidth
+              variant="outlined"
+              helperText="The URL-friendly version of the title. Leave blank to auto-generate."
+            />
+          </Grid>
+
+          {contentType === 'article' && (
+            <>
+              <Grid size={12}>
+                <TextField
+                  label="Category"
+                  name="category"
+                  value={formData.category}
+                  onChange={handleChange}
+                  fullWidth
+                  variant="outlined"
+                />
+              </Grid>
+
+
+              <Grid size={12}>
+                <TextField
+                  label="Excerpt"
+                  name="excerpt"
+                  value={formData.excerpt}
+                  onChange={handleChange}
+                  multiline
+                  rows={3}
+                  fullWidth
+                  variant="outlined"
+                />
+              </Grid>
+
+              <Grid size={12}>
+                <TextField
+                  label="Tags"
+                  value={tagInput}
+                  onChange={(e) => setTagInput(e.target.value)}
+                  onKeyDown={handleTagAdd}
+                  placeholder="Press Enter to add tag"
+                  fullWidth
+                  variant="outlined"
+                />
+                <TagsContainer>
+                  {formData.tags.map(tag => (
+                    <Chip
+                      key={tag}
+                      label={tag}
+                      onDelete={() => removeTag(tag)}
+                      color="primary"
+                      variant="outlined"
+                    />
+                  ))}
+                </TagsContainer>
+              </Grid>
+            </>
+          )}
+
+          {contentType === 'page' && (
+            <>
+              {/* Template - Full width on its own line */}
+              <Grid size={12}>
+                <FormControl fullWidth variant="outlined">
+                  <InputLabel>Template</InputLabel>
+                  <Select
+                    name="template"
+                    value={formData.template}
+                    onChange={handleChange}
+                    label="Template"
+                  >
+                    <MenuItem value="default">Default</MenuItem>
+                    <MenuItem value="full-width">Full Width</MenuItem>
+                    <MenuItem value="sidebar">With Sidebar</MenuItem>
+                  </Select>
+                </FormControl>
+              </Grid>
+
+              {/* Order - Full width on its own line */}
+              <Grid size={12}>
+                <TextField
+                  label="Order"
+                  name="order"
+                  type="number"
+                  value={formData.order}
+                  onChange={handleChange}
+                  fullWidth
+                  variant="outlined"
+                  helperText="The display order for this page in menus and lists"
+                />
+              </Grid>
+
+              {/* Show in Menu - On its own line */}
+              <Grid size={12}>
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      name="showInMenu"
+                      checked={formData.showInMenu}
+                      onChange={handleChange}
+                    />
+                  }
+                  label="Show in Menu"
+                />
+              </Grid>
+            </>
+          )}
+
+
+          <Grid size={12}>
+            <Divider sx={{ my: 2 }} />
+            <Typography variant="h6" gutterBottom>
+              Content *
+            </Typography>
+            <DocumentUpload
+              onContentLoaded={(htmlContent) => {
+                setFormData(prev => ({
+                  ...prev,
+                  body: prev.body + htmlContent
+                }));
+              }}
+              allowedTags={['p', 'br', 'span', 'div', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
+                'ul', 'ol', 'li', 'strong', 'b', 'em', 'i', 'u', 's', 'strike',
+                'a', 'img', 'blockquote', 'code', 'pre', 'table', 'thead', 'tbody',
+                'tfoot', 'tr', 'td', 'th', 'caption', 'sup', 'sub', 'hr']}
+            />
+            <Box sx={{ mt: 2 }}>
+              <RichTextEditor
+                value={formData.body}
+                onChange={(content) => setFormData(prev => ({ ...prev, body: content }))}
+                height={400}
+                contentType={contentType}
+              />
+              {errors.body && (
+                <FormHelperText error>{errors.body}</FormHelperText>
+              )}
+            </Box>
+          </Grid>
+
+          <Grid size={12}>
+            <FormControl fullWidth variant="outlined">
+              <InputLabel>Status</InputLabel>
+              <Select
+                name="status"
+                value={formData.status}
+                onChange={handleChange}
+                label="Status"
+              >
+                <MenuItem value="draft">Draft</MenuItem>
+                <MenuItem value="published">Published</MenuItem>
+                <MenuItem value="archived">Archived</MenuItem>
+              </Select>
+            </FormControl>
+          </Grid>
+        </Grid>
+      </StyledPaper>
+
+      <Box sx={{ display: 'flex', gap: 2, justifyContent: 'flex-end' }}>
+        <Button 
+          onClick={onCancel}
+          variant="outlined"
+          size="large"
         >
-          <option value="draft">Draft</option>
-          <option value="published">Published</option>
-          <option value="archived">Archived</option>
-        </select>
-      </div>
-
-      <div className="form-actions">
-        <button type="button" className="btn-cancel" onClick={onCancel}>
           Cancel
-        </button>
-        <button type="submit" className="btn-save">
+        </Button>
+        <Button 
+          type="submit"
+          variant="contained"
+          color="primary"
+          size="large"
+        >
           {content ? 'Update' : 'Create'} {contentType}
-        </button>
-      </div>
-    </form>
+        </Button>
+      </Box>
+    </Box>
   );
 };
 

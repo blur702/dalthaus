@@ -2,6 +2,10 @@ const express = require('express');
 const router = express.Router();
 const { Article, Page, PhotoBook } = require('../models/content');
 const { Op } = require('sequelize');
+const templateRoutes = require('./public/templates.routes');
+
+// Mount template routes
+router.use('/templates', templateRoutes);
 
 // Get all published articles
 router.get('/articles', async (req, res) => {
@@ -14,7 +18,7 @@ router.get('/articles', async (req, res) => {
       order: [['publishedAt', 'DESC']],
       limit: parseInt(limit),
       offset: parseInt(offset),
-      attributes: ['id', 'title', 'slug', 'body', 'coverImageUrl', 'publishedAt', 'metadata']
+      attributes: ['id', 'title', 'slug', 'body', 'featuredImage', 'publishedAt', 'metadata']
     });
 
     res.json({
@@ -54,7 +58,7 @@ router.get('/pages', async (req, res) => {
     const pages = await Page.findAll({
       where: { status: 'published' },
       order: [['order', 'ASC'], ['title', 'ASC']],
-      attributes: ['id', 'title', 'slug', 'body', 'coverImageUrl', 'parentId', 'metadata']
+      attributes: ['id', 'title', 'slug', 'body', 'featuredImage', 'parentId', 'metadata']
     });
 
     // Build hierarchical structure
@@ -112,11 +116,11 @@ router.get('/photobooks', async (req, res) => {
       order: [['publishedAt', 'DESC']],
       limit: parseInt(limit),
       offset: parseInt(offset),
-      attributes: ['id', 'title', 'slug', 'body', 'coverImageUrl', 'publishedAt', 'metadata']
+      attributes: ['id', 'title', 'slug', 'body', 'featuredImage', 'publishedAt', 'metadata']
     });
 
     res.json({
-      photoBooks: rows,
+      photobooks: rows,
       totalPages: Math.ceil(count / limit),
       currentPage: parseInt(page),
       totalItems: count

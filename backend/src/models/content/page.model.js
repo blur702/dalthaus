@@ -47,6 +47,16 @@ class Page {
       contentType: 'page'
     }, options);
   }
+
+  static async count(options = {}) {
+    return BaseContent.count({
+      ...options,
+      where: {
+        ...options.where,
+        contentType: 'page'
+      }
+    });
+  }
 }
 
 // Add self-referencing association

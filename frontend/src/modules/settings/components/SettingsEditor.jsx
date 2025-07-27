@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import './SettingsEditor.css';
 
 const SettingsEditor = ({ setting, onSave, onCancel }) => {
   const [formData, setFormData] = useState({
