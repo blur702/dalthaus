@@ -73,6 +73,18 @@ const BaseContent = sequelize.define('BaseContent', {
     field: 'featured_image_alt',
     comment: 'Alt text for featured image accessibility'
   },
+  featuredImageCaption: {
+    type: DataTypes.TEXT,
+    allowNull: true,
+    field: 'featured_image_caption',
+    comment: 'Caption text for the featured image'
+  },
+  featuredImageCredit: {
+    type: DataTypes.STRING,
+    allowNull: true,
+    field: 'featured_image_credit',
+    comment: 'Photo credit for the featured image'
+  },
   teaserImageAlt: {
     type: DataTypes.STRING,
     allowNull: true,

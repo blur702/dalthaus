@@ -40,7 +40,7 @@ const PhotoBookView = () => {
   const getImageUrl = (url) => {
     if (!url) return null;
     if (url.startsWith('/uploads')) {
-      return `http://localhost:5001${url}`;
+      return url;
     }
     return url;
   };
@@ -106,17 +106,60 @@ const PhotoBookView = () => {
 
         {/* Featured Image */}
         {photoBook.featuredImage && (
-          <Box mb={4} textAlign="center">
-            <img
-              src={getImageUrl(photoBook.featuredImage)}
-              alt={photoBook.featuredImageAlt || photoBook.title}
-              style={{
-                maxWidth: '100%',
-                maxHeight: '600px',
-                objectFit: 'contain',
-                borderRadius: '8px'
-              }}
-            />
+          <Box mb={4}>
+            <Box position="relative">
+              <Box textAlign="center">
+                <img
+                  src={getImageUrl(photoBook.featuredImage)}
+                  alt={photoBook.featuredImageAlt || photoBook.title}
+                  style={{
+                    width: '100%',
+                    height: 'auto',
+                    maxHeight: '800px',
+                    objectFit: 'contain',
+                    display: 'block'
+                  }}
+                />
+              </Box>
+              {(photoBook.featuredImageCaption || photoBook.featuredImageCredit || true) && (
+                <Box 
+                  sx={{ 
+                    mt: 1, 
+                    px: 1,
+                    display: 'flex',
+                    flexDirection: { xs: 'column', sm: 'row' },
+                    justifyContent: 'space-between',
+                    alignItems: { xs: 'flex-start', sm: 'flex-start' },
+                    gap: { xs: 0.5, sm: 2 }
+                  }}
+                >
+                  {photoBook.featuredImageCaption && (
+                    <Typography 
+                      variant="caption" 
+                      color="text.secondary"
+                      sx={{ 
+                        flexGrow: 1,
+                        wordBreak: 'break-word'
+                      }}
+                    >
+                      {photoBook.featuredImageCaption}
+                    </Typography>
+                  )}
+                  <Typography 
+                    variant="caption" 
+                    color="text.secondary"
+                    sx={{ 
+                      fontStyle: 'italic',
+                      minWidth: 'fit-content',
+                      flexShrink: 0,
+                      textAlign: 'right'
+                    }}
+                  >
+                    {photoBook.featuredImageCredit || 'Don Althaus'}
+                  </Typography>
+                </Box>
+              )}
+            </Box>
           </Box>
         )}
 
@@ -131,7 +174,7 @@ const PhotoBookView = () => {
                 height: 'auto',
                 display: 'block',
                 margin: '20px auto',
-                borderRadius: '4px'
+                borderRadius: '0'
               },
               '& p': {
                 marginBottom: '1.5em',
@@ -167,7 +210,7 @@ const PhotoBookView = () => {
                 padding: '8px 16px',
                 border: '1px solid',
                 borderColor: 'divider',
-                borderRadius: '4px',
+                borderRadius: '0',
                 background: 'white',
                 cursor: 'pointer',
                 transition: 'all 0.2s',

@@ -34,11 +34,13 @@ const ImagePreview = styled(Box)(({ theme }) => ({
   marginTop: theme.spacing(2),
   padding: theme.spacing(2),
   backgroundColor: theme.palette.grey[100],
-  borderRadius: theme.shape.borderRadius,
+  borderRadius: 0,
   '& img': {
-    maxWidth: '200px',
-    maxHeight: '150px',
-    objectFit: 'cover',
+    maxWidth: '300px',
+    maxHeight: '200px',
+    width: 'auto',
+    height: 'auto',
+    objectFit: 'contain',
     border: `1px solid ${theme.palette.divider}`,
     display: 'block',
   }
@@ -59,6 +61,8 @@ const ContentEditor = ({ content, contentType, onSave, onCancel }) => {
     status: 'draft',
     featuredImage: '',
     featuredImageAlt: '',
+    featuredImageCaption: '',
+    featuredImageCredit: 'Don Althaus',
     summary: '',
     teaserImage: '',
     teaserImageAlt: '',
@@ -82,9 +86,15 @@ const ContentEditor = ({ content, contentType, onSave, onCancel }) => {
 
   useEffect(() => {
     if (content) {
+      // Convert null values to empty strings to avoid React warnings
+      const sanitizedContent = Object.keys(content).reduce((acc, key) => {
+        acc[key] = content[key] === null ? '' : content[key];
+        return acc;
+      }, {});
+      
       setFormData({
         ...formData,
-        ...content,
+        ...sanitizedContent,
         tags: content.tags || []
       });
     }
@@ -155,7 +165,7 @@ const ContentEditor = ({ content, contentType, onSave, onCancel }) => {
     try {
       setLoading(true);
       const token = localStorage.getItem('token');
-      const response = await fetch('http://localhost:5001/api/upload/image', {
+      const response = await fetch('/api/upload/image', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`
@@ -192,7 +202,7 @@ const ContentEditor = ({ content, contentType, onSave, onCancel }) => {
     try {
       setLoading(true);
       const token = localStorage.getItem('token');
-      const response = await fetch('http://localhost:5001/api/upload/image', {
+      const response = await fetch('/api/upload/image', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`
@@ -284,7 +294,7 @@ const ContentEditor = ({ content, contentType, onSave, onCancel }) => {
           </Grid>
 
           {/* Featured Image - Full width on its own line */}
-          {(contentType === 'article' || contentType === 'photoBook') && (
+          {(contentType === 'article' || contentType === 'photoBook' || contentType === 'page') && (
             <Grid size={12}>
               <TextField
                 label="Featured Image"
@@ -332,7 +342,7 @@ const ContentEditor = ({ content, contentType, onSave, onCancel }) => {
                     Preview:
                   </Typography>
                   <img
-                    src={formData.featuredImage.startsWith('http') ? formData.featuredImage : `http://localhost:5001${formData.featuredImage}`}
+                    src={formData.featuredImage.startsWith('http') ? formData.featuredImage : formData.featuredImage}
                     alt="Featured image preview"
                     onError={(e) => {
                       console.error('Preview image failed to load:', formData.featuredImage);
@@ -345,7 +355,7 @@ const ContentEditor = ({ content, contentType, onSave, onCancel }) => {
           )}
 
           {/* Featured Image Alt Text */}
-          {(contentType === 'article' || contentType === 'photoBook') && formData.featuredImage && (
+          {(contentType === 'article' || contentType === 'photoBook' || contentType === 'page') && formData.featuredImage && (
             <Grid size={12}>
               <TextField
                 label="Featured Image Alt Text"
@@ -356,6 +366,40 @@ const ContentEditor = ({ content, contentType, onSave, onCancel }) => {
                 variant="outlined"
                 placeholder="Describe the featured image for accessibility"
                 helperText="Alternative text for screen readers and when image cannot be displayed"
+              />
+            </Grid>
+          )}
+
+          {/* Featured Image Caption */}
+          {(contentType === 'article' || contentType === 'photoBook' || contentType === 'page') && formData.featuredImage && (
+            <Grid size={12}>
+              <TextField
+                label="Featured Image Caption"
+                name="featuredImageCaption"
+                value={formData.featuredImageCaption}
+                onChange={handleChange}
+                fullWidth
+                multiline
+                rows={2}
+                variant="outlined"
+                placeholder="Optional caption to display under the image"
+                helperText="Caption text that will appear below the featured image"
+              />
+            </Grid>
+          )}
+
+          {/* Featured Image Credit */}
+          {(contentType === 'article' || contentType === 'photoBook' || contentType === 'page') && formData.featuredImage && (
+            <Grid size={12}>
+              <TextField
+                label="Photo Credit"
+                name="featuredImageCredit"
+                value={formData.featuredImageCredit}
+                onChange={handleChange}
+                fullWidth
+                variant="outlined"
+                placeholder="e.g., Photo by Don Althaus"
+                helperText="Credit information for the featured image"
               />
             </Grid>
           )}
@@ -424,7 +468,7 @@ const ContentEditor = ({ content, contentType, onSave, onCancel }) => {
                   Teaser Preview:
                 </Typography>
                 <img
-                  src={formData.teaserImage.startsWith('http') ? formData.teaserImage : `http://localhost:5001${formData.teaserImage}`}
+                  src={formData.teaserImage.startsWith('http') ? formData.teaserImage : formData.teaserImage}
                   alt="Teaser image preview"
                   onError={(e) => {
                     console.error('Teaser preview image failed to load:', formData.teaserImage);

@@ -62,7 +62,7 @@ const PhotoBookList = () => {
     
     // If it's a relative URL, prepend the backend URL
     if (imageUrl.startsWith('/uploads')) {
-      return `http://localhost:5001${imageUrl}`;
+      return `${imageUrl}`;
     }
     return imageUrl;
   };

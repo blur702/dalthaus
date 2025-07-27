@@ -109,16 +109,57 @@ const ArticleView = () => {
         {/* Featured Image */}
         {article.featuredImage && (
           <Box mb={4}>
-            <img
-              src={article.featuredImage}
-              alt={article.featuredImageAlt || article.title}
-              style={{
-                width: '100%',
-                maxHeight: '500px',
-                objectFit: 'cover',
-                borderRadius: '8px'
-              }}
-            />
+            <Box position="relative">
+              <img
+                src={article.featuredImage}
+                alt={article.featuredImageAlt || article.title}
+                style={{
+                  width: '100%',
+                  height: 'auto',
+                  maxHeight: '800px',
+                  objectFit: 'contain',
+                  display: 'block'
+                }}
+              />
+              {(article.featuredImageCaption || article.featuredImageCredit || true) && (
+                <Box 
+                  sx={{ 
+                    mt: 1, 
+                    px: 1,
+                    display: 'flex',
+                    flexDirection: { xs: 'column', sm: 'row' },
+                    justifyContent: 'space-between',
+                    alignItems: { xs: 'flex-start', sm: 'flex-start' },
+                    gap: { xs: 0.5, sm: 2 }
+                  }}
+                >
+                  {article.featuredImageCaption && (
+                    <Typography 
+                      variant="caption" 
+                      color="text.secondary"
+                      sx={{ 
+                        flexGrow: 1,
+                        wordBreak: 'break-word'
+                      }}
+                    >
+                      {article.featuredImageCaption}
+                    </Typography>
+                  )}
+                  <Typography 
+                    variant="caption" 
+                    color="text.secondary"
+                    sx={{ 
+                      fontStyle: 'italic',
+                      minWidth: 'fit-content',
+                      flexShrink: 0,
+                      textAlign: 'right'
+                    }}
+                  >
+                    {article.featuredImageCredit || 'Don Althaus'}
+                  </Typography>
+                </Box>
+              )}
+            </Box>
           </Box>
         )}
 
@@ -156,13 +197,13 @@ const ArticleView = () => {
               '& code': {
                 backgroundColor: 'grey.100',
                 padding: '2px 4px',
-                borderRadius: '4px',
+                borderRadius: '0',
                 fontSize: '0.9em'
               },
               '& pre': {
                 backgroundColor: 'grey.100',
                 padding: '1em',
-                borderRadius: '8px',
+                borderRadius: '0',
                 overflow: 'auto'
               }
             },
@@ -179,7 +220,7 @@ const ArticleView = () => {
                 padding: '8px 16px',
                 border: '1px solid',
                 borderColor: 'divider',
-                borderRadius: '4px',
+                borderRadius: '0',
                 background: 'white',
                 cursor: 'pointer',
                 transition: 'all 0.2s',
