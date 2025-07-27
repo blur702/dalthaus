@@ -74,11 +74,16 @@ npm run build
 
 ### Content Management
 - Three content types: Articles, Pages, Photo Books
-- Rich text editing with TinyMCE
+- Rich text editing with TinyMCE (GPL licensed)
 - Draft/Published/Archived workflow
 - Parent-child relationships for hierarchical pages
-- Cover image support (upload or URL)
+- Featured and teaser image support with alt text for accessibility
 - Automatic slug generation from titles
+- Summary and teaser content fields for listing pages
+- **Pagebreak Support**: Content can be split into multiple pages using the pagebreak button in TinyMCE
+  - TinyMCE saves pagebreaks as `<div class="pagebreak">` elements
+  - Frontend ContentViewer component automatically detects and paginates content
+  - Supports navigation between pages with visual indicators
 
 ### File Structure
 ```
@@ -155,10 +160,27 @@ Update `/var/www/config/database.json` with PostgreSQL credentials
 4. Add routes file
 5. Add frontend UI components
 
+### Working with Pagebreaks
+Content can be split into multiple pages for better readability:
+
+1. **In the Editor**: Click the "Page Break" button in TinyMCE toolbar
+2. **HTML Format**: TinyMCE inserts: `<div class="pagebreak" style="...">Page Break</div>`
+3. **Frontend Display**: ContentViewer component automatically:
+   - Detects pagebreak divs
+   - Splits content into pages
+   - Shows pagination controls
+   - Allows navigation between pages
+
+The ContentViewer component (`frontend/src/components/ContentViewer.jsx`) handles multiple pagebreak formats for compatibility:
+- TinyMCE div format: `<div class="pagebreak">`
+- HTML comments: `<!-- pagebreak -->`
+- Legacy formats: `mce-pagebreak` class
+
 ### Debugging TinyMCE Issues
 - Check if TinyMCE files are in `frontend/public/tinymce/`
 - Add `await page.waitForTimeout(2000)` after navigation
 - Verify iframe selector: `.tox-edit-area__iframe`
+- For pagebreak issues, check the source code view in TinyMCE
 
 ### Running Document Conversion
 1. Ensure Python service is running on port 8000

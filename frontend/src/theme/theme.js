@@ -120,6 +120,16 @@ const theme = createTheme({
     },
   },
   components: {
+    MuiCssBaseline: {
+      styleOverrides: {
+        html: {
+          scrollBehavior: 'smooth',
+        },
+        body: {
+          scrollBehavior: 'smooth',
+        },
+      },
+    },
     MuiButton: {
       styleOverrides: {
         root: {
