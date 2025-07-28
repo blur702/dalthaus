@@ -11,7 +11,8 @@ import {
   CircularProgress,
   Pagination,
   Breadcrumbs,
-  Link
+  Link,
+  Container
 } from '@mui/material';
 import HomeIcon from '@mui/icons-material/Home';
 import api from '../../services/api';
@@ -87,24 +88,25 @@ const ArticleList = () => {
   }
 
   return (
-    <Box>
-      {/* Breadcrumbs */}
-      <Breadcrumbs aria-label="breadcrumb" sx={{ mb: 3 }}>
-        <Link
-          component={RouterLink}
-          to="/"
-          color="inherit"
-          sx={{ display: 'flex', alignItems: 'center' }}
-        >
-          <HomeIcon sx={{ mr: 0.5 }} fontSize="small" />
-          Home
-        </Link>
-        <Typography color="text.primary">Articles</Typography>
-      </Breadcrumbs>
+    <Container maxWidth={false} sx={{ maxWidth: '1220px', py: 4 }}>
+      <Box>
+        {/* Breadcrumbs */}
+        <Breadcrumbs aria-label="breadcrumb" sx={{ mb: 3 }}>
+          <Link
+            component={RouterLink}
+            to="/"
+            color="inherit"
+            sx={{ display: 'flex', alignItems: 'center' }}
+          >
+            <HomeIcon sx={{ mr: 0.5 }} fontSize="small" />
+            Home
+          </Link>
+          <Typography color="text.primary">Articles</Typography>
+        </Breadcrumbs>
 
-      <Typography variant="h3" component="h1" gutterBottom>
-        Articles
-      </Typography>
+        <Typography variant="h3" component="h1" gutterBottom>
+          Articles
+        </Typography>
 
       {articles.length === 0 ? (
         <Box py={8} textAlign="center">
@@ -162,7 +164,8 @@ const ArticleList = () => {
           )}
         </>
       )}
-    </Box>
+      </Box>
+    </Container>
   );
 };
 

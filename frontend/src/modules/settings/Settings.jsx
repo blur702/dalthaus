@@ -427,6 +427,12 @@ const Settings = ({ setIsAuthenticated }) => {
                     </FormHelperText>
                   </Grid>
 
+                </Grid>
+              </FormSection>
+
+              {/* Maintenance Message - Full Width Section */}
+              <FormSection>
+                <Grid container>
                   <Grid item xs={12}>
                     <TextField
                       label="Maintenance Message"
@@ -434,7 +440,7 @@ const Settings = ({ setIsAuthenticated }) => {
                       value={settings.maintenanceMessage || 'The site is currently under maintenance. Please check back later.'}
                       onChange={handleChange}
                       multiline
-                      rows={3}
+                      rows={8}
                       fullWidth
                       disabled={!settings.maintenanceMode}
                       helperText="Message displayed to visitors when maintenance mode is active"

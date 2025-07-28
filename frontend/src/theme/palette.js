@@ -1,19 +1,19 @@
 // Shared color palette configuration
 export const palette = {
-  // Primary colors - Navy Blue theme
+  // Primary colors - Greyscale theme
   primary: {
-    main: '#2c3e50',
-    light: '#34495e',
-    dark: '#1a252f',
-    contrastText: '#ffffff',
+    main: '#404040',
+    light: '#525252',
+    dark: '#333333',
+    contrastText: '#e8e8e8',
   },
   
-  // Secondary colors - Green accent
+  // Secondary colors - Greyscale accent
   secondary: {
-    main: '#4CAF50',
-    light: '#81C784',
-    dark: '#388E3C',
-    contrastText: '#ffffff',
+    main: '#757575',
+    light: '#a8a8a8',
+    dark: '#424242',
+    contrastText: '#e8e8e8',
   },
   
   // Error states
@@ -66,55 +66,55 @@ export const palette = {
   
   // Background colors
   background: {
-    default: '#f5f5f5',
-    paper: '#ffffff',
-    dark: '#2c3e50',
-    darker: '#1a252f',
+    default: '#e8e8e8',
+    paper: '#e8e8e8',  // Same as default for consistent backgrounds
+    dark: '#d9d9d9',
+    darker: '#d0d0d0',
   },
   
   // Text colors
   text: {
-    primary: '#2c3e50',
-    secondary: '#7f8c8d',
-    disabled: '#95a5a6',
-    hint: '#95a5a6',
-    light: '#ffffff',
+    primary: '#404040',     // Darker grey (8.46:1 contrast ratio)
+    secondary: '#525252',   // Medium grey (6.38:1 contrast)
+    disabled: '#666666',    // Light grey for disabled text
+    hint: '#666666',
+    light: '#e8e8e8',       // For text on dark backgrounds
   },
   
   // Action colors
   action: {
-    active: '#2c3e50',
-    hover: 'rgba(44, 62, 80, 0.08)',
-    selected: 'rgba(44, 62, 80, 0.12)',
-    disabled: 'rgba(44, 62, 80, 0.26)',
-    disabledBackground: 'rgba(44, 62, 80, 0.12)',
+    active: '#404040',
+    hover: 'rgba(64, 64, 64, 0.08)',
+    selected: 'rgba(64, 64, 64, 0.12)',
+    disabled: 'rgba(64, 64, 64, 0.26)',
+    disabledBackground: 'rgba(64, 64, 64, 0.12)',
   },
   
   // Divider and border colors
-  divider: '#e0e0e0',
+  divider: '#c8c8c8',
   border: {
-    light: '#e0e0e0',
-    main: '#ddd',
-    dark: '#bdbdbd',
+    light: '#d0d0d0',
+    main: '#c8c8c8',
+    dark: '#b8b8b8',
   },
   
   // Additional UI colors
   ui: {
-    footer: '#34495e',
-    header: '#2c3e50',
-    sidebar: '#2c3e50',
-    hover: '#f8f9fa',
-    selected: '#e3f2fd',
+    footer: '#e8e8e8',
+    header: '#e8e8e8',
+    sidebar: '#e8e8e8',
+    hover: '#d9d9d9',
+    selected: '#d0d0d0',
   },
 };
 
 // Typography color variants
 export const typographyColors = {
-  heading: palette.text.primary,
-  body: palette.text.primary,
-  muted: palette.text.secondary,
-  disabled: palette.text.disabled,
-  inverse: palette.text.light,
+  heading: '#404040',  // Same as text.primary
+  body: '#404040',
+  muted: '#525252',
+  disabled: '#666666',
+  inverse: '#e8e8e8',
 };
 
 // Gradient definitions

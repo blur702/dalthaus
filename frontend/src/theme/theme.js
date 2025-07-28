@@ -11,16 +11,16 @@ const theme = createTheme({
     info: palette.info,
     success: palette.success,
     grey: {
-      50: '#fafafa',
-      100: '#f5f5f5',
-      200: '#eeeeee',
-      300: '#e0e0e0',
-      400: '#bdbdbd',
-      500: '#9e9e9e',
+      50: '#f5f5f5',
+      100: '#e8e8e8',
+      200: '#d9d9d9',
+      300: '#d0d0d0',
+      400: '#c8c8c8',
+      500: '#b8b8b8',
       600: '#757575',
-      700: '#616161',
-      800: '#424242',
-      900: '#212121',
+      700: '#666666',
+      800: '#525252',
+      900: '#404040',
     },
     background: palette.background,
     text: palette.text,
@@ -44,37 +44,37 @@ const theme = createTheme({
       fontSize: '2.5rem',
       fontWeight: 600,
       lineHeight: 1.2,
-      color: '#2c3e50',
+      color: '#404040',
     },
     h2: {
       fontSize: '2rem',
       fontWeight: 600,
       lineHeight: 1.3,
-      color: '#2c3e50',
+      color: '#404040',
     },
     h3: {
       fontSize: '1.75rem',
       fontWeight: 600,
       lineHeight: 1.4,
-      color: '#2c3e50',
+      color: '#404040',
     },
     h4: {
       fontSize: '1.5rem',
       fontWeight: 600,
       lineHeight: 1.4,
-      color: '#2c3e50',
+      color: '#404040',
     },
     h5: {
       fontSize: '1.25rem',
       fontWeight: 600,
       lineHeight: 1.5,
-      color: '#2c3e50',
+      color: '#404040',
     },
     h6: {
       fontSize: '1.125rem',
       fontWeight: 600,
       lineHeight: 1.5,
-      color: '#2c3e50',
+      color: '#404040',
     },
     body1: {
       fontSize: '1rem',
@@ -90,7 +90,7 @@ const theme = createTheme({
     },
     caption: {
       fontSize: '0.75rem',
-      color: '#7f8c8d',
+      color: '#666666',
     },
     overline: {
       fontSize: '0.75rem',
@@ -127,6 +127,18 @@ const theme = createTheme({
         },
         body: {
           scrollBehavior: 'smooth',
+          backgroundColor: '#e8e8e8',
+          color: '#404040',
+        },
+        '*, *::before, *::after': {
+          boxSizing: 'border-box',
+        },
+        a: {
+          color: '#404040',
+          textDecoration: 'none',
+          '&:hover': {
+            opacity: 0.7,
+          },
         },
       },
     },
@@ -147,13 +159,17 @@ const theme = createTheme({
           fontSize: '0.875rem',
         },
         containedPrimary: {
+          backgroundColor: '#404040',
+          color: '#e8e8e8',
           '&:hover': {
-            backgroundColor: '#34495e',
+            backgroundColor: '#333333',
           },
         },
         containedSecondary: {
+          backgroundColor: '#757575',
+          color: '#e8e8e8',
           '&:hover': {
-            backgroundColor: '#45a049',
+            backgroundColor: '#666666',
           },
         },
       },
@@ -167,10 +183,10 @@ const theme = createTheme({
         root: {
           '& .MuiOutlinedInput-root': {
             '&:hover fieldset': {
-              borderColor: '#2c3e50',
+              borderColor: '#404040',
             },
             '&.Mui-focused fieldset': {
-              borderColor: '#4CAF50',
+              borderColor: '#404040',
             },
           },
         },
@@ -179,10 +195,12 @@ const theme = createTheme({
     MuiCard: {
       styleOverrides: {
         root: {
-          boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
+          backgroundColor: '#e8e8e8',
+          color: '#404040',
+          boxShadow: '0 2px 4px rgba(64, 64, 64, 0.1)',
           transition: 'all 0.3s ease',
           '&:hover': {
-            boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
+            boxShadow: '0 4px 12px rgba(64, 64, 64, 0.15)',
           },
         },
       },
@@ -198,6 +216,8 @@ const theme = createTheme({
       styleOverrides: {
         root: {
           borderRadius: 8,
+          backgroundColor: '#e8e8e8',
+          color: '#404040',
         },
         elevation1: {
           boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
@@ -234,12 +254,12 @@ const theme = createTheme({
     MuiTableCell: {
       styleOverrides: {
         root: {
-          borderBottom: '1px solid #e0e0e0',
+          borderBottom: '1px solid #c8c8c8',
         },
         head: {
-          backgroundColor: '#f8f9fa',
+          backgroundColor: '#d9d9d9',
           fontWeight: 600,
-          color: '#34495e',
+          color: '#404040',
         },
       },
     },
@@ -247,7 +267,7 @@ const theme = createTheme({
       styleOverrides: {
         root: {
           '&:hover': {
-            backgroundColor: '#f8f9fa',
+            backgroundColor: '#d9d9d9',
           },
         },
       },
@@ -255,10 +275,10 @@ const theme = createTheme({
     MuiLink: {
       styleOverrides: {
         root: {
-          color: '#3498db',
+          color: '#404040',
           textDecoration: 'none',
           '&:hover': {
-            textDecoration: 'underline',
+            opacity: 0.7,
           },
         },
       },
@@ -266,15 +286,15 @@ const theme = createTheme({
     MuiDrawer: {
       styleOverrides: {
         paper: {
-          backgroundColor: '#2c3e50',
-          color: '#ffffff',
+          backgroundColor: '#e8e8e8',
+          color: '#404040',
         },
       },
     },
     MuiDivider: {
       styleOverrides: {
         root: {
-          borderColor: '#e0e0e0',
+          borderColor: '#c8c8c8',
         },
       },
     },
@@ -288,7 +308,8 @@ const theme = createTheme({
     MuiTooltip: {
       styleOverrides: {
         tooltip: {
-          backgroundColor: '#34495e',
+          backgroundColor: '#525252',
+          color: '#e8e8e8',
           fontSize: '0.75rem',
         },
       },
@@ -305,7 +326,7 @@ const theme = createTheme({
     MuiSkeleton: {
       styleOverrides: {
         root: {
-          backgroundColor: 'rgba(0, 0, 0, 0.08)',
+          backgroundColor: 'rgba(64, 64, 64, 0.08)',
         },
       },
     },
@@ -320,7 +341,7 @@ const theme = createTheme({
     MuiCircularProgress: {
       styleOverrides: {
         root: {
-          color: '#4CAF50',
+          color: '#404040',
         },
       },
     },
@@ -339,7 +360,7 @@ const theme = createTheme({
       height: 100,
     },
     content: {
-      maxWidth: 1200,
+      maxWidth: 1220,
     },
   },
 });

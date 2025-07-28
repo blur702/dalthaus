@@ -1,0 +1,95 @@
+/* Global styles for WCAG AA compliant greyscale theme */
+
+/* Reset and base styles */
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background-color: #e8e8e8; /* Darker grey background */
+  color: #404040; /* Darker grey with 8.46:1 contrast */
+}
+
+/* Typography defaults */
+body {
+  font-family: 'Gelasio', Georgia, serif;
+  font-size: 16px;
+  line-height: 1.15;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Headings */
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Arimo', Arial, sans-serif;
+  color: #404040;
+  margin: 0;
+  font-weight: 400;
+}
+
+/* Links */
+a {
+  color: #404040;
+  text-decoration: none;
+  transition: opacity 0.2s ease;
+}
+
+a:hover {
+  opacity: 0.7;
+}
+
+/* Paragraphs and text */
+p {
+  color: #404040;
+  margin: 0 0 1em 0;
+}
+
+/* Override Material-UI Paper backgrounds - keep them same as main background */
+.MuiPaper-root {
+  background-color: #e8e8e8 !important; /* Same as main background */
+  color: #404040 !important;
+}
+
+/* Form elements */
+input, textarea, select {
+  color: #404040;
+  background-color: #d0d0d0; /* Slightly darker for form fields */
+  border: 1px solid #b8b8b8;
+}
+
+/* Buttons */
+button {
+  color: #404040;
+}
+
+/* Selection highlight */
+::selection {
+  background-color: #404040;
+  color: #ffffff;
+}
+
+::-moz-selection {
+  background-color: #404040;
+  color: #ffffff;
+}
+
+/* Scrollbar styling (webkit browsers) */
+::-webkit-scrollbar {
+  width: 12px;
+  background-color: #e8e8e8;
+}
+
+::-webkit-scrollbar-track {
+  background-color: #e8e8e8;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #b8b8b8;
+  border-radius: 6px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: #a0a0a0;
+}

@@ -501,32 +501,36 @@ exports.getGlobalSettings = async (req, res) => {
         configuration: {},
         globalSettings: {
           // Typography
-          primaryFont: 'Roboto',
-          secondaryFont: 'Open Sans',
+          primaryFont: 'Arimo',  // Google Font substitute for Arial
+          secondaryFont: 'Gelasio',  // Google Font substitute for Georgia
           baseFontSize: 16,
           fontScale: 1.25,
           headingWeight: 700,
           bodyWeight: 400,
-          lineHeight: 1.6,
+          lineHeight: 1.15,  // 1.15 line height as specified
           letterSpacing: 0,
-          paragraphSpacing: 1,
+          paragraphSpacing: 0,  // 0 space above and below paragraphs
           
           // Colors
-          primaryColor: '#1976d2',
-          secondaryColor: '#dc004e',
-          textColor: '#333333',
-          backgroundColor: '#ffffff',
-          surfaceColor: '#f5f5f5',
+          primaryColor: '#141414',  // Dark gray for links/accents
+          secondaryColor: '#141414',  // Dark gray
+          textColor: '#141414',  // Dark gray RGB(20, 20, 20)
+          backgroundColor: '#f8f8f8',  // Very light gray RGB(248, 248, 248)
+          surfaceColor: '#ffffff',
           errorColor: '#f44336',
           warningColor: '#ff9800',
           infoColor: '#2196f3',
           successColor: '#4caf50',
           
           // Body Settings
-          bodyBackgroundColor: '#ffffff',
-          bodyTextColor: '#333333',
-          bodyLinkColor: '#1976d2',
-          bodyLinkHoverColor: '#115293',
+          bodyBackgroundColor: '#f8f8f8',  // Very light gray RGB(248, 248, 248)
+          bodyTextColor: '#141414',  // Dark gray RGB(20, 20, 20)
+          bodyLinkColor: '#141414',  // Dark gray for links
+          bodyLinkHoverColor: '#000000',  // Darker on hover
+          
+          // Text Colors
+          headingColor: '#141414',  // Dark gray RGB(20, 20, 20)
+          captionColor: '#141414',  // Dark gray RGB(20, 20, 20)
           
           // Spacing
           containerMaxWidth: 1200,

@@ -31,7 +31,8 @@ module.exports = (sequelize) => {
     },
     metaAuthor: {
       type: DataTypes.STRING,
-      allowNull: true
+      allowNull: true,
+      defaultValue: 'Don Althaus'
     },
     contactEmail: {
       type: DataTypes.STRING,

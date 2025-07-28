@@ -1,0 +1,289 @@
+/* Main CSS file for hard-coded templates */
+
+/* Import Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Arimo:wght@400;700&family=Gelasio:wght@400&display=swap');
+
+/* CSS Variables for global design tokens */
+:root {
+  /* Typography */
+  --font-primary: 'Arimo', Arial, sans-serif;
+  --font-secondary: 'Gelasio', Georgia, serif;
+  --font-size-base: 16px;
+  --line-height: 1.15;
+  --letter-spacing-heading: -0.02em;
+  
+  /* Colors */
+  --color-text: #141414; /* RGB(20, 20, 20) */
+  --color-background: #f8f8f8; /* RGB(248, 248, 248) */
+  --color-white: #ffffff;
+  --color-border: #e0e0e0;
+  
+  /* Spacing */
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  --spacing-xl: 32px;
+  --spacing-xxl: 48px;
+  --spacing-section: 64px;
+  
+  /* Layout */
+  --container-max-width: 1200px;
+  --content-main-width: 66.666%;
+  --content-sidebar-width: 33.333%;
+  
+  /* Transitions */
+  --transition-default: all 0.3s ease;
+}
+
+/* Global Styles */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: var(--font-size-base);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  font-family: var(--font-secondary);
+  line-height: var(--line-height);
+  color: var(--color-text);
+  background-color: var(--color-background);
+  font-weight: 400;
+}
+
+/* Typography */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-primary);
+  font-weight: 700;
+  line-height: var(--line-height);
+  letter-spacing: var(--letter-spacing-heading);
+  color: var(--color-text);
+  margin-bottom: var(--spacing-md);
+}
+
+h1 {
+  font-size: 2.5rem;
+  letter-spacing: -0.03em;
+}
+
+h2 {
+  font-size: 2rem;
+  letter-spacing: -0.02em;
+}
+
+h3 {
+  font-size: 1.75rem;
+  letter-spacing: -0.01em;
+}
+
+h4 {
+  font-size: 1.5rem;
+}
+
+h5 {
+  font-size: 1.25rem;
+}
+
+h6 {
+  font-size: 1rem;
+}
+
+p {
+  margin-bottom: 0; /* 0 paragraph spacing as specified */
+  line-height: var(--line-height);
+}
+
+/* Multiple paragraphs - add spacing between them */
+p + p {
+  margin-top: var(--spacing-md);
+}
+
+/* Links */
+a {
+  color: var(--color-text);
+  text-decoration: none;
+  transition: var(--transition-default);
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+/* Utility Classes */
+.container {
+  width: 100%;
+  max-width: var(--container-max-width);
+  margin: 0 auto;
+  padding: 0 var(--spacing-lg);
+}
+
+.text-italic {
+  font-style: italic;
+}
+
+.text-center {
+  text-align: center;
+}
+
+/* Layout Classes */
+.layout-two-column {
+  display: grid;
+  grid-template-columns: var(--content-main-width) var(--content-sidebar-width);
+  gap: var(--spacing-xl);
+}
+
+.layout-two-column-reversed {
+  display: grid;
+  grid-template-columns: var(--content-main-width) var(--content-sidebar-width);
+  gap: var(--spacing-xl);
+}
+
+@media (max-width: 768px) {
+  .layout-two-column,
+  .layout-two-column-reversed {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Section Classes */
+.section {
+  padding: var(--spacing-section) 0;
+}
+
+.section-header {
+  background-color: var(--color-background);
+  border-bottom: 1px solid var(--color-border);
+  padding: var(--spacing-xxl) 0;
+}
+
+.section-mission {
+  background-color: var(--color-background);
+  border-bottom: 1px solid var(--color-border);
+  padding: var(--spacing-xl) 0;
+}
+
+/* Card Components */
+.card {
+  background-color: var(--color-white);
+  border: 1px solid var(--color-border);
+  transition: var(--transition-default);
+  margin-bottom: var(--spacing-lg);
+}
+
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.card-content {
+  padding: var(--spacing-lg);
+}
+
+.card-image {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* Specific Components */
+.site-title {
+  font-family: var(--font-primary);
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: var(--spacing-sm);
+}
+
+.site-subtitle {
+  font-family: var(--font-secondary);
+  font-size: 1.25rem;
+  font-style: italic;
+  font-weight: 400;
+}
+
+.mission-title {
+  font-family: var(--font-primary);
+  font-size: 1.75rem;
+  font-weight: 700;
+  margin-bottom: var(--spacing-md);
+}
+
+.mission-text {
+  font-family: var(--font-secondary);
+  font-size: 1rem;
+  max-width: 800px;
+}
+
+.article-title {
+  font-family: var(--font-primary);
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: var(--spacing-md);
+}
+
+.article-excerpt {
+  font-family: var(--font-secondary);
+  font-size: 1rem;
+  margin-bottom: var(--spacing-md);
+}
+
+.read-more-link {
+  font-family: var(--font-secondary);
+  font-style: italic;
+  color: var(--color-text);
+}
+
+/* Footer */
+.footer {
+  background-color: var(--color-background);
+  border-top: 1px solid var(--color-border);
+  padding: var(--spacing-xl) 0;
+  text-align: center;
+}
+
+.footer-text {
+  font-family: var(--font-secondary);
+  font-size: 0.875rem;
+  color: var(--color-text);
+}
+
+/* Responsive Typography */
+@media (max-width: 768px) {
+  h1 {
+    font-size: 2rem;
+  }
+  
+  h2 {
+    font-size: 1.75rem;
+  }
+  
+  h3 {
+    font-size: 1.5rem;
+  }
+  
+  h4 {
+    font-size: 1.25rem;
+  }
+  
+  .site-title {
+    font-size: 2rem;
+  }
+}
+
+/* Print Styles */
+@media print {
+  body {
+    background-color: white;
+    color: black;
+  }
+  
+  .card {
+    border: 1px solid black;
+    box-shadow: none;
+  }
+}

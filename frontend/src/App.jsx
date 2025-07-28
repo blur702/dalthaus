@@ -9,20 +9,20 @@ import PageManagement from './modules/content/pages/PageManagement';
 import PhotoBookManagement from './modules/content/pages/PhotoBookManagement';
 import TinymceSettings from './modules/settings/TinymceSettings';
 import Settings from './modules/settings/Settings';
-import GlobalSettings from './modules/settings/GlobalSettings';
 import ContentPreview from './pages/ContentPreview';
 import TestPagebreak from './pages/TestPagebreak';
 import PagebreakTest from './pages/PagebreakTest';
 import SimplePagebreakTest from './pages/SimplePagebreakTest';
 import TestTinymceIntegration from './pages/TestTinymceIntegration';
 import MaterialUITest from './pages/MaterialUITest';
-import TemplateBuilder from './modules/templates/pages/TemplateBuilder';
-import TemplateManagement from './modules/templates/pages/TemplateManagement';
-import GlobalTemplateSettings from './modules/templates/pages/GlobalTemplateSettings';
+import TestFrontPage from './pages/TestFrontPage';
+// Template imports removed - using hard-coded templates
 import ProtectedRoute from './components/ProtectedRoute';
 import ErrorBoundary from './components/ErrorBoundary';
 import ScrollToTop from './components/ScrollToTop';
 import api from './services/api';
+import { SiteSettingsProvider } from './contexts/SiteSettingsContext';
+import './styles/global.css'; // Import global styles
 
 // Public components
 import PublicLayout from './layouts/PublicLayout';
@@ -77,9 +77,10 @@ function App() {
 
   return (
     <ErrorBoundary>
-      <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
-        <ScrollToTop />
-        <Routes>
+      <SiteSettingsProvider>
+        <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+          <ScrollToTop />
+          <Routes>
           <Route 
           path="/login" 
           element={<LoginPage setIsAuthenticated={setIsAuthenticated} />} 
@@ -148,45 +149,12 @@ function App() {
             </ProtectedRoute>
           }
         />
+        {/* Template routes removed - using hard-coded templates */}
+        
+        {/* Test route for front page template */}
         <Route
-          path="/admin/settings/global"
-          element={
-            <ProtectedRoute isAuthenticated={isAuthenticated}>
-              <GlobalSettings setIsAuthenticated={setIsAuthenticated} />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/admin/templates"
-          element={
-            <ProtectedRoute isAuthenticated={isAuthenticated}>
-              <TemplateManagement setIsAuthenticated={setIsAuthenticated} />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/admin/templates/builder"
-          element={
-            <ProtectedRoute isAuthenticated={isAuthenticated}>
-              <TemplateBuilder setIsAuthenticated={setIsAuthenticated} />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/admin/templates/builder/:id"
-          element={
-            <ProtectedRoute isAuthenticated={isAuthenticated}>
-              <TemplateBuilder setIsAuthenticated={setIsAuthenticated} />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/admin/templates/global-settings"
-          element={
-            <ProtectedRoute isAuthenticated={isAuthenticated}>
-              <GlobalTemplateSettings setIsAuthenticated={setIsAuthenticated} />
-            </ProtectedRoute>
-          }
+          path="/test-front-page"
+          element={<TestFrontPage />}
         />
         <Route
           path="/preview/:type/:id"
@@ -236,6 +204,7 @@ function App() {
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </Router>
+    </SiteSettingsProvider>
     </ErrorBoundary>
   );
 }

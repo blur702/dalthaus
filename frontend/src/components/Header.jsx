@@ -31,11 +31,9 @@ import {
 const Header = ({ setIsAuthenticated }) => {
   const [anchorElContent, setAnchorElContent] = useState(null);
   const [anchorElSettings, setAnchorElSettings] = useState(null);
-  const [anchorElTemplates, setAnchorElTemplates] = useState(null);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [mobileContentOpen, setMobileContentOpen] = useState(false);
   const [mobileSettingsOpen, setMobileSettingsOpen] = useState(false);
-  const [mobileTemplatesOpen, setMobileTemplatesOpen] = useState(false);
   
   const navigate = useNavigate();
   const theme = useTheme();
@@ -55,14 +53,10 @@ const Header = ({ setIsAuthenticated }) => {
     setAnchorElSettings(event.currentTarget);
   };
 
-  const handleTemplatesMenuOpen = (event) => {
-    setAnchorElTemplates(event.currentTarget);
-  };
 
   const handleMenuClose = () => {
     setAnchorElContent(null);
     setAnchorElSettings(null);
-    setAnchorElTemplates(null);
   };
 
   const handleMobileDrawerToggle = () => {
@@ -77,9 +71,6 @@ const Header = ({ setIsAuthenticated }) => {
     setMobileSettingsOpen(!mobileSettingsOpen);
   };
 
-  const handleMobileTemplatesToggle = () => {
-    setMobileTemplatesOpen(!mobileTemplatesOpen);
-  };
 
   const contentMenuItems = [
     { label: 'Articles', path: '/admin/content/articles' },
@@ -87,15 +78,9 @@ const Header = ({ setIsAuthenticated }) => {
     { label: 'Photo Books', path: '/admin/content/photo-books' },
   ];
 
-  const templatesMenuItems = [
-    { label: 'Global Settings', path: '/admin/templates/global-settings' },
-    { label: 'Template Management', path: '/admin/templates' },
-    { label: 'Template Builder', path: '/admin/templates/builder' },
-  ];
 
   const settingsMenuItems = [
     { label: 'Site Settings', path: '/admin/settings' },
-    { label: 'Global Settings', path: '/admin/settings/global' },
     { label: 'TinyMCE Editor', path: '/admin/settings/tinymce' },
     { divider: true },
     { label: 'Manage Users', path: '/admin/users' },
@@ -134,27 +119,6 @@ const Header = ({ setIsAuthenticated }) => {
           </List>
         </Collapse>
 
-        <ListItem disablePadding>
-          <ListItemButton onClick={handleMobileTemplatesToggle}>
-            <ListItemText primary="Templates" />
-            {mobileTemplatesOpen ? <ExpandLess /> : <ExpandMore />}
-          </ListItemButton>
-        </ListItem>
-        <Collapse in={mobileTemplatesOpen} timeout="auto" unmountOnExit>
-          <List component="div" disablePadding>
-            {templatesMenuItems.map((item) => (
-              <ListItemButton
-                key={item.path}
-                component={RouterLink}
-                to={item.path}
-                sx={{ pl: 4 }}
-                onClick={handleMobileDrawerToggle}
-              >
-                <ListItemText primary={item.label} />
-              </ListItemButton>
-            ))}
-          </List>
-        </Collapse>
 
         <ListItem disablePadding>
           <ListItemButton onClick={handleMobileSettingsToggle}>
@@ -265,33 +229,6 @@ const Header = ({ setIsAuthenticated }) => {
                 ))}
               </Menu>
 
-              <Button
-                color="inherit"
-                onClick={handleTemplatesMenuOpen}
-                endIcon={<ExpandMore />}
-              >
-                Templates
-              </Button>
-              <Menu
-                anchorEl={anchorElTemplates}
-                open={Boolean(anchorElTemplates)}
-                onClose={handleMenuClose}
-                anchorOrigin={{
-                  vertical: 'bottom',
-                  horizontal: 'left',
-                }}
-              >
-                {templatesMenuItems.map((item) => (
-                  <MenuItem
-                    key={item.path}
-                    component={RouterLink}
-                    to={item.path}
-                    onClick={handleMenuClose}
-                  >
-                    {item.label}
-                  </MenuItem>
-                ))}
-              </Menu>
 
               <Button
                 color="inherit"

@@ -15,6 +15,7 @@ router.get('/site', protect, async (req, res) => {
       settings = await SiteSettings.create({
         siteName: 'My CMS Site',
         siteDescription: 'A powerful content management system',
+        metaAuthor: 'Don Althaus',
         timezone: 'America/New_York'
       });
     }

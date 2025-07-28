@@ -11,7 +11,8 @@ import {
   CircularProgress,
   Pagination,
   Breadcrumbs,
-  Link
+  Link,
+  Container
 } from '@mui/material';
 import HomeIcon from '@mui/icons-material/Home';
 import PhotoLibraryIcon from '@mui/icons-material/PhotoLibrary';
@@ -88,24 +89,25 @@ const PhotoBookList = () => {
   }
 
   return (
-    <Box>
-      {/* Breadcrumbs */}
-      <Breadcrumbs aria-label="breadcrumb" sx={{ mb: 3 }}>
-        <Link
-          component={RouterLink}
-          to="/"
-          color="inherit"
-          sx={{ display: 'flex', alignItems: 'center' }}
-        >
-          <HomeIcon sx={{ mr: 0.5 }} fontSize="small" />
-          Home
-        </Link>
-        <Typography color="text.primary">Photo Books</Typography>
-      </Breadcrumbs>
+    <Container maxWidth={false} sx={{ maxWidth: '1220px', py: 4 }}>
+      <Box>
+        {/* Breadcrumbs */}
+        <Breadcrumbs aria-label="breadcrumb" sx={{ mb: 3 }}>
+          <Link
+            component={RouterLink}
+            to="/"
+            color="inherit"
+            sx={{ display: 'flex', alignItems: 'center' }}
+          >
+            <HomeIcon sx={{ mr: 0.5 }} fontSize="small" />
+            Home
+          </Link>
+          <Typography color="text.primary">Photo Books</Typography>
+        </Breadcrumbs>
 
-      <Typography variant="h3" component="h1" gutterBottom>
-        Photo Books
-      </Typography>
+        <Typography variant="h3" component="h1" gutterBottom>
+          Photo Books
+        </Typography>
 
       {photoBooks.length === 0 ? (
         <Box py={8} textAlign="center">
@@ -192,7 +194,8 @@ const PhotoBookList = () => {
           )}
         </>
       )}
-    </Box>
+      </Box>
+    </Container>
   );
 };
 

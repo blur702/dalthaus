@@ -3,11 +3,11 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { 
   Box, 
   Typography, 
-  Paper, 
   CircularProgress,
   Breadcrumbs,
   Link,
-  Chip
+  Chip,
+  Container
 } from '@mui/material';
 import { Link as RouterLink } from 'react-router-dom';
 import HomeIcon from '@mui/icons-material/Home';
@@ -57,26 +57,27 @@ const ArticleView = () => {
   }
 
   return (
-    <Box>
-      {/* Breadcrumbs */}
-      <Breadcrumbs aria-label="breadcrumb" sx={{ mb: 3 }}>
-        <Link
-          component={RouterLink}
-          to="/"
-          color="inherit"
-          sx={{ display: 'flex', alignItems: 'center' }}
-        >
-          <HomeIcon sx={{ mr: 0.5 }} fontSize="small" />
-          Home
-        </Link>
-        <Link component={RouterLink} to="/articles" color="inherit">
-          Articles
-        </Link>
-        <Typography color="text.primary">{article.title}</Typography>
-      </Breadcrumbs>
+    <Container maxWidth={false} sx={{ maxWidth: '1220px', py: 4 }}>
+      <Box>
+        {/* Breadcrumbs */}
+        <Breadcrumbs aria-label="breadcrumb" sx={{ mb: 3 }}>
+          <Link
+            component={RouterLink}
+            to="/"
+            color="inherit"
+            sx={{ display: 'flex', alignItems: 'center' }}
+          >
+            <HomeIcon sx={{ mr: 0.5 }} fontSize="small" />
+            Home
+          </Link>
+          <Link component={RouterLink} to="/articles" color="inherit">
+            Articles
+          </Link>
+          <Typography color="text.primary">{article.title}</Typography>
+        </Breadcrumbs>
 
-      {/* Article Content */}
-      <Paper elevation={0} sx={{ p: 4 }}>
+        {/* Article Content */}
+        <Box sx={{ p: 4 }}>
         {/* Article Header */}
         <Box mb={4}>
           <Typography variant="h3" component="h1" gutterBottom>
@@ -269,8 +270,9 @@ const ArticleView = () => {
         >
           <ContentViewer content={article.body} showPagination={true} />
         </Box>
-      </Paper>
-    </Box>
+      </Box>
+      </Box>
+    </Container>
   );
 };
 
