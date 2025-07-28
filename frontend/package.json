@@ -19,7 +19,9 @@
     "@mui/material": "^7.2.0",
     "@tinymce/tinymce-react": "^6.2.1",
     "axios": "^1.6.2",
+    "dompurify": "^3.2.6",
     "react": "^18.2.0",
+    "react-color": "^2.19.3",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.20.0",
     "tinymce": "^7.9.1"

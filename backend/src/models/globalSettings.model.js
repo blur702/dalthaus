@@ -74,7 +74,22 @@ const GlobalSettings = sequelize.define('GlobalSettings', {
         md: 960,
         lg: 1280,
         xl: 1920
-      }
+      },
+      
+      // Header Background Settings
+      headerBackgroundImage: null,
+      headerBackgroundPosition: 'center center',
+      headerBackgroundSize: 'cover',
+      headerBackgroundRepeat: 'no-repeat',
+      headerBackgroundAttachment: 'scroll',
+      headerOverlayColor: 'rgba(0, 0, 0, 0.5)',
+      headerOverlayOpacity: 0.5,
+      headerHeight: '400px',
+      headerContentAlignment: 'center',
+      headerBackgroundBlur: 0,
+      headerBackgroundBrightness: 100,
+      headerBackgroundContrast: 100,
+      headerBackgroundGrayscale: 0
     },
     comment: 'Global settings configuration'
   },

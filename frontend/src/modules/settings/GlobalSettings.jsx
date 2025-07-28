@@ -55,7 +55,7 @@ const GlobalSettings = ({ setIsAuthenticated }) => {
     setSaving(true);
     try {
       const response = await api.put('/settings/global', {
-        settings: settings.globalSettings || settings
+        settings: settings
       });
       
       if (response.data.success) {

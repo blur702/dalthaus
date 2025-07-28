@@ -1,5 +1,7 @@
 const { models } = require('../database');
 const GlobalSettings = models.GlobalSettings;
+const path = require('path');
+const fs = require('fs').promises;
 
 // Get global settings
 exports.getGlobalSettings = async (req, res) => {
@@ -155,6 +157,100 @@ exports.importGlobalSettings = async (req, res) => {
       success: false,
       message: 'Error importing global settings',
       error: error.message
+    });
+  }
+};
+
+// Upload header background image
+exports.uploadHeaderImage = async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ 
+        success: false,
+        message: 'No image file provided' 
+      });
+    }
+
+    const userId = req.user?.id;
+    const imageUrl = `/uploads/headers/${req.file.filename}`;
+    
+    // Get current settings
+    const settings = await GlobalSettings.getDefault();
+    const currentSettings = settings.settings;
+    
+    // Delete old header image if exists
+    if (currentSettings.headerBackgroundImage) {
+      const oldImagePath = path.join(__dirname, '../../../', currentSettings.headerBackgroundImage);
+      try {
+        await fs.unlink(oldImagePath);
+      } catch (error) {
+        // Ignore error if file doesn't exist
+        console.log('Could not delete old header image:', error.message);
+      }
+    }
+    
+    // Update settings with new image URL
+    const updatedSettings = await GlobalSettings.updateDefault({
+      headerBackgroundImage: imageUrl
+    }, userId);
+    
+    res.json({
+      success: true,
+      message: 'Header background image uploaded successfully',
+      imageUrl: imageUrl,
+      filename: req.file.filename,
+      originalName: req.file.originalname,
+      size: req.file.size
+    });
+  } catch (error) {
+    console.error('Header image upload error:', error);
+    res.status(500).json({ 
+      success: false,
+      message: 'Failed to upload header image',
+      error: error.message 
+    });
+  }
+};
+
+// Delete header background image
+exports.deleteHeaderImage = async (req, res) => {
+  try {
+    const userId = req.user?.id;
+    
+    // Get current settings
+    const settings = await GlobalSettings.getDefault();
+    const currentSettings = settings.settings;
+    
+    if (!currentSettings.headerBackgroundImage) {
+      return res.status(404).json({
+        success: false,
+        message: 'No header background image to delete'
+      });
+    }
+    
+    // Delete the image file
+    const imagePath = path.join(__dirname, '../../../', currentSettings.headerBackgroundImage);
+    try {
+      await fs.unlink(imagePath);
+    } catch (error) {
+      console.log('Could not delete header image file:', error.message);
+    }
+    
+    // Update settings to remove image URL
+    await GlobalSettings.updateDefault({
+      headerBackgroundImage: null
+    }, userId);
+    
+    res.json({
+      success: true,
+      message: 'Header background image deleted successfully'
+    });
+  } catch (error) {
+    console.error('Header image deletion error:', error);
+    res.status(500).json({ 
+      success: false,
+      message: 'Failed to delete header image',
+      error: error.message 
     });
   }
 };

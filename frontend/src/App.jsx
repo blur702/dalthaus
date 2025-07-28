@@ -9,6 +9,7 @@ import PageManagement from './modules/content/pages/PageManagement';
 import PhotoBookManagement from './modules/content/pages/PhotoBookManagement';
 import TinymceSettings from './modules/settings/TinymceSettings';
 import Settings from './modules/settings/Settings';
+import GlobalSettings from './modules/settings/GlobalSettings';
 import ContentPreview from './pages/ContentPreview';
 import TestPagebreak from './pages/TestPagebreak';
 import PagebreakTest from './pages/PagebreakTest';
@@ -146,6 +147,14 @@ function App() {
           element={
             <ProtectedRoute isAuthenticated={isAuthenticated}>
               <TinymceSettings setIsAuthenticated={setIsAuthenticated} />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/settings/global"
+          element={
+            <ProtectedRoute isAuthenticated={isAuthenticated}>
+              <GlobalSettings setIsAuthenticated={setIsAuthenticated} />
             </ProtectedRoute>
           }
         />
