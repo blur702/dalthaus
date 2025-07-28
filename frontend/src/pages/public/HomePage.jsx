@@ -68,19 +68,48 @@ const HomePage = () => {
         <Typography variant="h4" component="h2" gutterBottom>
           Recent Articles
         </Typography>
-        <Grid container spacing={3}>
+        <Grid container spacing={3} sx={{ alignItems: 'stretch' }}>
           {articles.map((article) => (
             <Grid size={{ xs: 12, sm: 6, md: 4 }} key={article.id}>
-              <Card>
-                <CardActionArea component={RouterLink} to={`/articles/${article.slug}`}>
-                  {article.featuredImage && (
-                    <CardMedia
-                      component="img"
-                      height="200"
-                      image={article.featuredImage}
-                      alt={article.title}
-                    />
-                  )}
+              <Card sx={{ overflow: 'hidden', p: 0, height: '100%', display: 'flex', flexDirection: 'column' }}>
+                <CardActionArea component={RouterLink} to={`/articles/${article.slug}`} sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', alignItems: 'flex-start', justifyContent: 'flex-start' }}>
+                  <Box sx={{ position: 'relative', paddingTop: '75%', width: '100%' }}>
+                    {(article.teaserImage || article.featuredImage) ? (
+                      <CardMedia
+                        component="img"
+                        image={article.teaserImage || article.featuredImage}
+                        alt={article.teaserImageAlt || article.featuredImageAlt || article.title}
+                        sx={{ 
+                          position: 'absolute',
+                          top: 0,
+                          left: 0,
+                          width: '100%',
+                          height: '100%',
+                          objectFit: 'cover',
+                          borderRadius: 0
+                        }}
+                      />
+                    ) : (
+                      <Box
+                        sx={{
+                          position: 'absolute',
+                          top: 0,
+                          left: 0,
+                          width: '100%',
+                          height: '100%',
+                          backgroundColor: 'grey.200',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          borderRadius: 0
+                        }}
+                      >
+                        <Typography variant="h1" color="grey.400">
+                          📄
+                        </Typography>
+                      </Box>
+                    )}
+                  </Box>
                   <CardContent>
                     <Typography variant="h6" component="h3" gutterBottom>
                       {article.title}
@@ -116,19 +145,48 @@ const HomePage = () => {
         <Typography variant="h4" component="h2" gutterBottom>
           Photo Books
         </Typography>
-        <Grid container spacing={3}>
+        <Grid container spacing={3} sx={{ alignItems: 'stretch' }}>
           {photoBooks.map((book) => (
             <Grid size={{ xs: 12, sm: 6, md: 4 }} key={book.id}>
-              <Card>
-                <CardActionArea component={RouterLink} to={`/photobooks/${book.slug}`}>
-                  {book.featuredImage && (
-                    <CardMedia
-                      component="img"
-                      height="300"
-                      image={book.featuredImage}
-                      alt={book.title}
-                    />
-                  )}
+              <Card sx={{ overflow: 'hidden', p: 0, height: '100%', display: 'flex', flexDirection: 'column' }}>
+                <CardActionArea component={RouterLink} to={`/photobooks/${book.slug}`} sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', alignItems: 'flex-start', justifyContent: 'flex-start' }}>
+                  <Box sx={{ position: 'relative', paddingTop: '75%', width: '100%' }}>
+                    {(book.teaserImage || book.featuredImage) ? (
+                      <CardMedia
+                        component="img"
+                        image={book.teaserImage || book.featuredImage}
+                        alt={book.teaserImageAlt || book.featuredImageAlt || book.title}
+                        sx={{ 
+                          position: 'absolute',
+                          top: 0,
+                          left: 0,
+                          width: '100%',
+                          height: '100%',
+                          objectFit: 'cover',
+                          borderRadius: 0
+                        }}
+                      />
+                    ) : (
+                      <Box
+                        sx={{
+                          position: 'absolute',
+                          top: 0,
+                          left: 0,
+                          width: '100%',
+                          height: '100%',
+                          backgroundColor: 'grey.200',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          borderRadius: 0
+                        }}
+                      >
+                        <Typography variant="h1" color="grey.400">
+                          📸
+                        </Typography>
+                      </Box>
+                    )}
+                  </Box>
                   <CardContent>
                     <Typography variant="h6" component="h3" gutterBottom>
                       {book.title}

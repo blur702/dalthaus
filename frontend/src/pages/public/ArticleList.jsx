@@ -116,24 +116,52 @@ const ArticleList = () => {
         </Box>
       ) : (
         <>
-          <Grid container spacing={3} sx={{ mb: 4 }}>
+          <Grid container spacing={3} sx={{ mb: 4, alignItems: 'stretch' }}>
             {articles.map((article) => (
               <Grid size={{ xs: 12, sm: 6, md: 4 }} key={article.id}>
-                <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+                <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column', overflow: 'hidden', p: 0 }}>
                   <CardActionArea 
                     component={RouterLink} 
                     to={`/articles/${article.slug}`}
-                    sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', alignItems: 'stretch' }}
+                    sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', alignItems: 'flex-start', justifyContent: 'flex-start' }}
                   >
-                    {getImageUrl(article) && (
-                      <CardMedia
-                        component="img"
-                        height="200"
-                        image={getImageUrl(article)}
-                        alt={article.teaserImageAlt || article.featuredImageAlt || article.title}
-                        sx={{ objectFit: 'cover' }}
-                      />
-                    )}
+                    <Box sx={{ position: 'relative', paddingTop: '75%', width: '100%' }}>
+                      {getImageUrl(article) ? (
+                        <CardMedia
+                          component="img"
+                          image={getImageUrl(article)}
+                          alt={article.teaserImageAlt || article.featuredImageAlt || article.title}
+                          sx={{ 
+                            position: 'absolute',
+                            top: 0,
+                            left: 0,
+                            width: '100%',
+                            height: '100%',
+                            objectFit: 'cover',
+                            borderRadius: 0
+                          }}
+                        />
+                      ) : (
+                        <Box
+                          sx={{
+                            position: 'absolute',
+                            top: 0,
+                            left: 0,
+                            width: '100%',
+                            height: '100%',
+                            backgroundColor: 'grey.200',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            borderRadius: 0
+                          }}
+                        >
+                          <Typography variant="h1" color="grey.400">
+                            📄
+                          </Typography>
+                        </Box>
+                      )}
+                    </Box>
                     <CardContent sx={{ flexGrow: 1 }}>
                       <Typography variant="h6" component="h2" gutterBottom>
                         {article.title}

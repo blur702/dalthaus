@@ -18,7 +18,7 @@ router.get('/articles', async (req, res) => {
       order: [['publishedAt', 'DESC']],
       limit: parseInt(limit),
       offset: parseInt(offset),
-      attributes: ['id', 'title', 'slug', 'body', 'featuredImage', 'publishedAt', 'metadata']
+      attributes: ['id', 'title', 'slug', 'body', 'featuredImage', 'featuredImageAlt', 'featuredImageCaption', 'featuredImageCredit', 'teaserImage', 'teaserImageAlt', 'summary', 'publishedAt', 'metadata']
     });
 
     res.json({
@@ -58,7 +58,7 @@ router.get('/pages', async (req, res) => {
     const pages = await Page.findAll({
       where: { status: 'published' },
       order: [['order', 'ASC'], ['title', 'ASC']],
-      attributes: ['id', 'title', 'slug', 'body', 'featuredImage', 'parentId', 'metadata']
+      attributes: ['id', 'title', 'slug', 'body', 'featuredImage', 'featuredImageAlt', 'teaserImage', 'teaserImageAlt', 'summary', 'parentId', 'metadata']
     });
 
     // Build hierarchical structure
@@ -116,7 +116,7 @@ router.get('/photobooks', async (req, res) => {
       order: [['publishedAt', 'DESC']],
       limit: parseInt(limit),
       offset: parseInt(offset),
-      attributes: ['id', 'title', 'slug', 'body', 'featuredImage', 'publishedAt', 'metadata']
+      attributes: ['id', 'title', 'slug', 'body', 'featuredImage', 'featuredImageAlt', 'featuredImageCaption', 'featuredImageCredit', 'teaserImage', 'teaserImageAlt', 'summary', 'publishedAt', 'metadata']
     });
 
     res.json({

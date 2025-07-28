@@ -125,20 +125,22 @@ const ArticleView = () => {
               {(article.featuredImageCaption || article.featuredImageCredit || true) && (
                 <Box 
                   sx={{ 
-                    mt: 1, 
-                    px: 1,
+                    mt: 1,
+                    backgroundColor: '#d9d9d9',
+                    p: 2,
                     display: 'flex',
                     flexDirection: { xs: 'column', sm: 'row' },
                     justifyContent: 'space-between',
                     alignItems: { xs: 'flex-start', sm: 'flex-start' },
-                    gap: { xs: 0.5, sm: 2 }
+                    gap: { xs: 0.5, sm: 2 },
+                    width: '100%'
                   }}
                 >
                   {article.featuredImageCaption && (
                     <Typography 
-                      variant="caption" 
-                      color="text.secondary"
                       sx={{ 
+                        fontSize: '1em',
+                        color: 'text.secondary',
                         flexGrow: 1,
                         wordBreak: 'break-word'
                       }}
@@ -147,9 +149,9 @@ const ArticleView = () => {
                     </Typography>
                   )}
                   <Typography 
-                    variant="caption" 
-                    color="text.secondary"
                     sx={{ 
+                      fontSize: '1em',
+                      color: 'text.secondary',
                       fontStyle: 'italic',
                       minWidth: 'fit-content',
                       flexShrink: 0,

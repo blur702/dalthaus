@@ -117,16 +117,16 @@ const PhotoBookList = () => {
         </Box>
       ) : (
         <>
-          <Grid container spacing={3} sx={{ mb: 4 }}>
+          <Grid container spacing={3} sx={{ mb: 4, alignItems: 'stretch' }}>
             {photoBooks.map((book) => (
-              <Grid size={{ xs: 12, sm: 6, md: 4, lg: 3 }} key={book.id}>
-                <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+              <Grid size={{ xs: 12, sm: 6, md: 4 }} key={book.id}>
+                <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column', overflow: 'hidden', p: 0 }}>
                   <CardActionArea 
                     component={RouterLink} 
                     to={`/photobooks/${book.slug}`}
-                    sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', alignItems: 'stretch' }}
+                    sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', alignItems: 'flex-start', justifyContent: 'flex-start' }}
                   >
-                    <Box sx={{ position: 'relative', paddingTop: '100%', overflow: 'hidden' }}>
+                    <Box sx={{ position: 'relative', paddingTop: '75%', width: '100%' }}>
                       {getImageUrl(book) ? (
                         <CardMedia
                           component="img"
@@ -138,7 +138,8 @@ const PhotoBookList = () => {
                             left: 0,
                             width: '100%',
                             height: '100%',
-                            objectFit: 'cover' 
+                            objectFit: 'cover',
+                            borderRadius: 0
                           }}
                         />
                       ) : (
@@ -149,10 +150,11 @@ const PhotoBookList = () => {
                             left: 0,
                             width: '100%',
                             height: '100%',
+                            backgroundColor: 'grey.200',
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
-                            backgroundColor: 'grey.200'
+                            borderRadius: 0
                           }}
                         >
                           <PhotoLibraryIcon sx={{ fontSize: 60, color: 'grey.500' }} />
