@@ -5,7 +5,7 @@ const path = require('path');
 
 class DocumentConverterService {
   constructor() {
-    this.baseURL = process.env.DOC_CONVERTER_URL || 'http://127.0.0.1:8000';
+    this.baseURL = process.env.DOC_CONVERTER_URL || 'http://127.0.0.1:8001';
   }
 
   /**
