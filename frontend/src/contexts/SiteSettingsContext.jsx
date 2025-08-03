@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import api from '../services/api';
+import DOMPurify from 'dompurify';
 
 const SiteSettingsContext = createContext();
 
@@ -43,10 +44,17 @@ export const SiteSettingsProvider = ({ children }) => {
     }
   };
 
+  // Helper function to strip HTML tags
+  const stripHTML = (html) => {
+    const clean = DOMPurify.sanitize(html || '', { ALLOWED_TAGS: [] });
+    return clean;
+  };
+
   // Update document title when site name changes
   useEffect(() => {
     if (settings.siteName) {
-      document.title = settings.siteName;
+      // Strip HTML tags for document title
+      document.title = stripHTML(settings.siteName);
     }
   }, [settings.siteName]);
 
@@ -60,7 +68,8 @@ export const SiteSettingsProvider = ({ children }) => {
         metaDescription.name = 'description';
         document.head.appendChild(metaDescription);
       }
-      metaDescription.content = settings.siteDescription;
+      // Strip HTML tags for meta description
+      metaDescription.content = stripHTML(settings.siteDescription);
     }
 
     // Update meta keywords
@@ -71,7 +80,7 @@ export const SiteSettingsProvider = ({ children }) => {
         metaKeywords.name = 'keywords';
         document.head.appendChild(metaKeywords);
       }
-      metaKeywords.content = settings.metaKeywords;
+      metaKeywords.content = stripHTML(settings.metaKeywords);
     }
 
     // Update meta author
@@ -82,7 +91,7 @@ export const SiteSettingsProvider = ({ children }) => {
         metaAuthor.name = 'author';
         document.head.appendChild(metaAuthor);
       }
-      metaAuthor.content = settings.metaAuthor;
+      metaAuthor.content = stripHTML(settings.metaAuthor);
     }
 
     // Update favicon

@@ -85,11 +85,30 @@ const BaseContent = sequelize.define('BaseContent', {
     field: 'featured_image_credit',
     comment: 'Photo credit for the featured image'
   },
+  featuredImageLightbox: {
+    type: DataTypes.STRING,
+    allowNull: true,
+    field: 'featured_image_lightbox',
+    comment: 'URL to larger version of featured image for lightbox display'
+  },
   teaserImageAlt: {
     type: DataTypes.STRING,
     allowNull: true,
     field: 'teaser_image_alt',
     comment: 'Alt text for teaser image accessibility'
+  },
+  teaserImageLightbox: {
+    type: DataTypes.STRING,
+    allowNull: true,
+    field: 'teaser_image_lightbox',
+    comment: 'URL to larger version of teaser image for lightbox display'
+  },
+  inlineImageLightboxUrls: {
+    type: DataTypes.JSON,
+    allowNull: true,
+    defaultValue: {},
+    field: 'inline_image_lightbox_urls',
+    comment: 'JSON object mapping inline image URLs to their lightbox versions'
   },
   status: {
     type: DataTypes.ENUM('draft', 'published', 'archived'),

@@ -9,6 +9,7 @@ import {
 import { styled } from '@mui/material/styles';
 import { Link as RouterLink } from 'react-router-dom';
 import { useSiteSettings } from '../contexts/SiteSettingsContext';
+import SafeHTML from '../components/SafeHTML';
 
 // Styled components
 const FooterWrapper = styled(Box)(({ theme }) => ({
@@ -47,7 +48,7 @@ const FooterTemplate = () => {
       <FooterContainer>
         {/* Copyright Bar */}
         <CopyrightText>
-          © {currentYear} {settings.siteName || 'Site Name'}. All rights reserved.
+          © {currentYear} <SafeHTML html={settings.siteName || 'Site Name'} />. All rights reserved.
         </CopyrightText>
       </FooterContainer>
     </FooterWrapper>

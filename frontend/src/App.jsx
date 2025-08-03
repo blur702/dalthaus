@@ -24,6 +24,7 @@ import ScrollToTop from './components/ScrollToTop';
 import api from './services/api';
 import { SiteSettingsProvider } from './contexts/SiteSettingsContext';
 import './styles/global.css'; // Import global styles
+import './styles/photography.css'; // Import photography-specific styles
 
 // Public components
 import PublicLayout from './layouts/PublicLayout';

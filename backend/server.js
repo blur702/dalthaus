@@ -69,16 +69,15 @@ app.use('/api/public', checkMaintenanceMode, publicRoutes);
 // Apply maintenance check to uploaded files
 app.use('/uploads', checkMaintenanceMode);
 
-// Production deployment configuration
-if (process.env.NODE_ENV === 'production') {
-  // Serve static files from the React app
-  app.use(express.static('/var/www/public_html'));
+// Serve the React frontend build
+// This allows the backend to serve both API and frontend from the same port
+const frontendPath = path.join(__dirname, '../frontend/dist');
+app.use(express.static(frontendPath));
 
-  // Catch-all route for React Router
-  app.get('*', (req, res) => {
-    res.sendFile(path.join('/var/www/public_html', 'index.html'));
-  });
-}
+// Catch-all route for React Router (must be after API routes)
+app.get('*', (req, res) => {
+  res.sendFile(path.join(frontendPath, 'index.html'));
+});
 
 // Admin user seeding function
 async function seedAdminUser() {

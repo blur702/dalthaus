@@ -1,5 +1,7 @@
 import axios from 'axios';
 
+// For production deployment on standard HTTP/HTTPS ports
+// The backend API will be served from the same domain
 const api = axios.create({
   baseURL: '/api',
 });

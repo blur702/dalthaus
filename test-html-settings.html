@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Test HTML in Settings</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; }
+    .test { margin: 20px 0; padding: 20px; border: 1px solid #ccc; }
+    pre { background: #f5f5f5; padding: 10px; }
+  </style>
+</head>
+<body>
+  <h1>Testing HTML in Site Settings</h1>
+  
+  <div class="test">
+    <h2>Instructions:</h2>
+    <ol>
+      <li>Go to <a href="http://localhost:5173/admin/settings" target="_blank">Admin Settings</a></li>
+      <li>Login with admin / (130Bpm)</li>
+      <li>Update Site Name to: <code>Don &lt;strong&gt;Althaus&lt;/strong&gt;</code></li>
+      <li>Update Site Description to: <code>Professional &lt;em&gt;photography&lt;/em&gt;&lt;br&gt;and visual arts</code></li>
+      <li>Save Settings</li>
+      <li>Check the preview boxes in the settings page</li>
+      <li>Go to <a href="http://localhost:5173" target="_blank">Public Site</a> to see the results</li>
+    </ol>
+  </div>
+  
+  <div class="test">
+    <h2>Advanced HTML Examples with Span:</h2>
+    <ol>
+      <li>With class: <code>&lt;span class="highlight"&gt;Don Althaus&lt;/span&gt; Photography</code></li>
+      <li>With ID: <code>&lt;span id="site-title"&gt;Don&lt;/span&gt; Althaus</code></li>
+      <li>With inline style: <code>Don &lt;span style="color: #666; font-weight: bold;"&gt;Althaus&lt;/span&gt;</code></li>
+      <li>Multiple attributes: <code>&lt;span class="name" id="photographer" style="text-transform: uppercase;"&gt;Don Althaus&lt;/span&gt;</code></li>
+      <li>Complex example: <code>&lt;span style="font-size: 1.2em;"&gt;Don&lt;/span&gt; &lt;strong style="color: #404040;"&gt;Althaus&lt;/strong&gt;&lt;br&gt;&lt;em&gt;photography&lt;/em&gt;</code></li>
+    </ol>
+  </div>
+  
+  <div class="test">
+    <h2>Expected Results:</h2>
+    <ul>
+      <li>Site Name should show: Don <strong>Althaus</strong></li>
+      <li>Site Description should show: Professional <em>photography</em><br>and visual arts</li>
+      <li>The HTML tags should be rendered, not displayed as text</li>
+      <li>Document title should be: "Don Althaus" (without HTML tags)</li>
+    </ul>
+  </div>
+  
+  <div class="test">
+    <h2>Security Test:</h2>
+    <p>Try entering: <code>&lt;script&gt;alert('XSS')&lt;/script&gt;&lt;strong&gt;Test&lt;/strong&gt;</code></p>
+    <p>Expected: Script tag should be removed, but strong tag should work</p>
+    <p>Dangerous styles test: <code>&lt;span style="position: absolute; javascript:alert('XSS')"&gt;Test&lt;/span&gt;</code></p>
+    <p>Expected: position and javascript properties should be removed</p>
+  </div>
+  
+  <div class="test">
+    <h2>Allowed CSS Properties:</h2>
+    <ul>
+      <li>Colors: color, background-color</li>
+      <li>Typography: font-size, font-weight, font-style, text-decoration, text-align, text-transform, line-height, letter-spacing</li>
+      <li>Spacing: margin, padding (including individual sides)</li>
+      <li>Display: display (only safe values: block, inline, inline-block, none, flex, inline-flex)</li>
+      <li>Visibility: opacity, visibility</li>
+      <li>Sizing: width, height, max-width, max-height, min-width, min-height</li>
+      <li>Border: border, border-radius</li>
+      <li>Text: vertical-align, white-space</li>
+    </ul>
+  </div>
+</body>
+</html>

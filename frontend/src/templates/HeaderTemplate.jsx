@@ -22,6 +22,7 @@ import { Menu as MenuIcon, Close as CloseIcon } from '@mui/icons-material';
 import { styled } from '@mui/material/styles';
 import { Link as RouterLink, useLocation } from 'react-router-dom';
 import { useSiteSettings } from '../contexts/SiteSettingsContext';
+import SafeHTML from '../components/SafeHTML';
 
 // Styled components
 const HeaderWrapper = styled(Box)(({ theme }) => ({
@@ -172,12 +173,16 @@ const HeaderTemplate = ({ navigation = [] }) => {
                 paddingRight: 2,
               }}
             >
-              <SiteTitle component="h1" sx={{ fontSize: { xs: '2rem', sm: '2.5rem' } }}>
-                {settings.siteName || 'Site Name'}
-              </SiteTitle>
-              <SiteSubtitle sx={{ fontSize: { xs: '1rem', sm: '1.25rem' } }}>
-                {settings.siteDescription || 'Site Description'}
-              </SiteSubtitle>
+              <SafeHTML
+                html={settings.siteName || 'Site Name'}
+                component={SiteTitle}
+                sx={{ fontSize: { xs: '2rem', sm: '2.5rem' } }}
+              />
+              <SafeHTML
+                html={settings.siteDescription || 'Site Description'}
+                component={SiteSubtitle}
+                sx={{ fontSize: { xs: '1rem', sm: '1.25rem' } }}
+              />
             </Box>
             
             {/* Right side - Hamburger Menu (hidden on mobile, shown on desktop) */}
