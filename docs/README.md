@@ -1,219 +1,330 @@
-# Admin Panel Documentation
+# Admin Panel CMS
 
-## Overview
+A modern, full-featured Content Management System (CMS) with rich text editing capabilities, document conversion, and comprehensive user management.
 
-This is a full-stack web application with a secure admin panel built using:
-- **Backend**: Node.js, Express.js, PostgreSQL, Sequelize ORM
-- **Frontend**: React, Vite, React Router
-- **Authentication**: JWT tokens with bcrypt password hashing
+## Features
 
-## Project Structure
+### 🔐 Authentication & Authorization
+- JWT-based authentication with 7-day token expiration
+- Role-based access control (user, superuser)
+- Protected routes with automatic token validation
+- Session persistence with localStorage
 
-```
-/var/www/public_html/
-├── backend/                    # Backend API server
-│   ├── src/
-│   │   ├── config/            # Database configuration
-│   │   ├── controllers/       # Request handlers
-│   │   ├── middleware/        # Auth middleware
-│   │   ├── models/           # Database models
-│   │   └── routes/           # API routes
-│   └── server.js             # Main server file
-├── frontend/                  # React frontend
-│   ├── src/
-│   │   ├── components/       # Reusable components
-│   │   ├── modules/          # Feature modules
-│   │   ├── pages/            # Page components
-│   │   └── services/         # API services
-│   └── index.html
-├── docs/                     # Documentation
-└── config/                   # External configuration
-    └── database.json         # Database credentials
-```
+### 👥 User Management
+- Complete CRUD operations for users
+- Role assignment and management
+- User search and pagination
+- Bulk operations support
 
-## Key Features
+### 📄 Content Management System
+- Three content types: Articles, Pages, Photo Books
+- Rich text editing with TinyMCE
+- Draft/Published/Archived workflow
+- SEO-friendly slug generation
+- Automatic pagebreak detection and page counting
+- Content preview functionality
+- Parent-child relationships for hierarchical content
+- Cover image support with upload and URL options
+- Full-size cover image display on public frontend
 
-1. **Authentication System**
-   - JWT-based authentication
-   - Secure password hashing (bcrypt, 12 rounds)
-   - Protected routes
-   - Pre-seeded admin superuser
+### ✏️ Rich Text Editor (TinyMCE)
+- Full-featured WYSIWYG editor
+- Multiple plugins: formatting, lists, links, images, tables, media, pagebreak
+- Custom pagebreak implementation with visual representation
+- Image upload support with base64 encoding
+- Configurable editor settings
 
-2. **User Management Module** (`/modules/users/`)
-   - Complete CRUD operations
-   - Role-based access (user, admin, superuser)
-   - Cannot delete last superuser
-   - Cannot delete own account
+### ⚙️ TinyMCE Settings Management
+- Create and manage custom editor configurations
+- 5 pre-configured presets (Basic, Full Featured, Blog Post, Email Template, Documentation)
+- Live preview of configurations
+- Import/Export settings as JSON
+- Tag-based organization
+- Set default configurations
 
-3. **Content Management System** (`/modules/content/`)
-   - Three content types: Articles, Pages, Photo Books
-   - Single table inheritance pattern
-   - Draft/Published/Archived workflow
-   - Metadata storage for extensibility
+### 📎 Document Conversion Service
+- Convert Word (.docx, .doc), OpenDocument (.odt), and RTF files to HTML
+- Preserves formatting and styles
+- Image extraction and storage
+- Python-based microservice using FastAPI
 
-4. **Reusable UI Components**
-   - Header with navigation menu
-   - Footer with links
-   - AdminLayout wrapper
-   - Modal forms
-   - Alert notifications
+### 🛡️ Security Features
+- Password hashing with bcrypt
+- Environment-based JWT secret configuration
+- CORS configuration
+- Input validation and sanitization
+- SQL injection prevention via Sequelize ORM
+- Error boundaries for React components
 
-## Database Schema
+## Tech Stack
 
-### Users Table
-- id (UUID, primary key)
-- username (unique)
-- passwordHash
-- role (user|admin|superuser)
-- createdAt, updatedAt
+### Frontend
+- **React 18** - UI library
+- **React Router v6** - Client-side routing
+- **Vite** - Build tool and dev server
+- **Axios** - HTTP client
+- **TinyMCE React** - Rich text editor
 
-### Content Table (Single Table Inheritance)
-- id (UUID, primary key)
-- title
-- slug (unique, auto-generated)
-- body (text content)
-- status (draft|published|archived)
-- contentType (article|page|photoBook)
-- authorId (foreign key to users)
-- publishedAt
-- metadata (JSONB for type-specific data)
-- parentId (for page hierarchy)
-- createdAt, updatedAt
+### Backend
+- **Node.js** - Runtime environment
+- **Express.js** - Web framework
+- **PostgreSQL** - Database
+- **Sequelize** - ORM
+- **JWT** - Authentication
+- **bcrypt** - Password hashing
+- **Multer** - File uploads (including cover images)
 
-## API Endpoints
+### Document Converter (Python Microservice)
+- **FastAPI** - Web framework
+- **python-docx** - Word document processing
+- **odfpy** - OpenDocument processing
+- **striprtf** - RTF processing
+- **BeautifulSoup4** - HTML processing
 
-### Authentication
-- POST `/api/auth/login` - User login
-
-### Users (Protected - Admin only)
-- GET `/api/users` - List all users
-- GET `/api/users/:id` - Get single user
-- POST `/api/users` - Create user
-- PUT `/api/users/:id` - Update user
-- DELETE `/api/users/:id` - Delete user
-
-### Content
-Public endpoints:
-- GET `/api/content/articles` - List articles
-- GET `/api/content/articles/:id` - Get article
-- GET `/api/content/articles/slug/:slug` - Get article by slug
-
-Protected endpoints (Admin only):
-- POST `/api/content/articles` - Create article
-- PUT `/api/content/articles/:id` - Update article
-- DELETE `/api/content/articles/:id` - Delete article
-
-(Similar endpoints exist for pages and photo-books)
-
-## Getting Started
+## Installation
 
 ### Prerequisites
-- Node.js (v14+)
-- PostgreSQL
-- npm
+- Node.js (v18 or higher)
+- PostgreSQL (v12 or higher)
+- Python 3.8+ (for document converter)
 
 ### Backend Setup
+
+1. Clone the repository:
 ```bash
-cd backend
+git clone [repository-url]
+cd admin-panel/backend
+```
+
+2. Install dependencies:
+```bash
 npm install
-# Configure database in /var/www/config/database.json
+```
+
+3. Create `.env` file:
+```env
+JWT_SECRET=your-secret-key-here
+NODE_ENV=development
+PORT=5001
+```
+
+4. Configure database in `/var/www/config/database.json`
+
+5. Start the server:
+```bash
 npm start
 ```
 
+The backend will:
+- Connect to PostgreSQL
+- Run database migrations
+- Seed admin user (username: admin, password: (130Bpm))
+- Seed TinyMCE presets
+- Start on port 5001
+
 ### Frontend Setup
+
+1. Navigate to frontend:
 ```bash
-cd frontend
+cd ../frontend
+```
+
+2. Install dependencies:
+```bash
 npm install
+```
+
+3. Start development server:
+```bash
 npm run dev
 ```
 
-### Default Credentials
-- Username: `admin`
-- Password: `(130Bpm)`
+The frontend will start on http://localhost:5173
 
-## Development Notes
+### Document Converter Setup (Optional)
 
-### Environment Variables
-- `NODE_ENV` - Set to 'production' for production mode
-- `JWT_SECRET` - Secret key for JWT tokens (defaults to dev key)
-- `PORT` - Server port (defaults to 5001)
+1. Navigate to converter:
+```bash
+cd ../backend/src/services/documentConverter
+```
 
-### Database Configuration
-Database credentials are stored in `/var/www/config/database.json` outside the webroot for security. The file contains settings for both development and production environments.
+2. Create virtual environment:
+```bash
+python -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+```
 
-### Production Deployment
-In production mode (`NODE_ENV=production`), the Express server serves the built React app from `/var/www/public_html/`.
+3. Install dependencies:
+```bash
+pip install -r requirements.txt
+```
+
+4. Start the service:
+```bash
+python converter_service.py
+```
+
+The converter will start on http://localhost:8001
+
+## Development
+
+### Available Scripts
+
+#### Frontend
+- `npm run dev` - Start development server with hot reload
+- `npm run build` - Build for production
+- `npm run preview` - Preview production build
+- `npm run lint` - Run ESLint
+
+#### Backend
+- `npm start` - Start production server
+- `npm run dev` - Start with nodemon for development
+
+### Project Structure
+
+```
+/var/www/public_html/
+├── frontend/
+│   ├── src/
+│   │   ├── components/     # Reusable UI components
+│   │   ├── modules/        # Feature modules
+│   │   │   ├── content/    # Content management
+│   │   │   ├── settings/   # Settings management
+│   │   │   └── users/      # User management
+│   │   ├── pages/          # Page components
+│   │   ├── services/       # API services
+│   │   └── App.jsx         # Root component
+│   └── public/             # Static assets
+├── backend/
+│   ├── src/
+│   │   ├── config/         # Database config
+│   │   ├── controllers/    # Route handlers
+│   │   ├── middleware/     # Express middleware
+│   │   ├── models/         # Sequelize models
+│   │   ├── routes/         # API routes
+│   │   ├── services/       # Business logic
+│   │   └── utils/          # Utilities
+│   └── server.js           # Entry point
+└── test-suite/             # Test files
+```
+
+## API Documentation
+
+### Authentication
+- `POST /api/auth/login` - User login
+- `GET /api/auth/verify` - Verify token
+
+### Users
+- `GET /api/users` - List users (paginated)
+- `GET /api/users/:id` - Get user details
+- `POST /api/users` - Create user
+- `PUT /api/users/:id` - Update user
+- `DELETE /api/users/:id` - Delete user
+
+### Content (Articles, Pages, Photo Books)
+- `GET /api/content/{type}` - List content
+- `GET /api/content/{type}/:id` - Get content
+- `POST /api/content/{type}` - Create content
+- `PUT /api/content/{type}/:id` - Update content
+- `DELETE /api/content/{type}/:id` - Delete content
+- `GET /api/public/articles` - Public article listing
+- `GET /api/public/articles/:slug` - Public article detail
+
+### File Upload
+- `POST /api/upload/image` - Upload cover images
+  - Returns URL path for uploaded images
+  - Stores files in `/uploads/images/`
+
+### TinyMCE Settings
+- `GET /api/admin/tinymce-settings` - List settings
+- `GET /api/admin/tinymce-settings/:id` - Get setting
+- `POST /api/admin/tinymce-settings` - Create setting
+- `PUT /api/admin/tinymce-settings/:id` - Update setting
+- `DELETE /api/admin/tinymce-settings/:id` - Delete setting
+- `GET /api/admin/tinymce-settings/:id/export` - Export setting
+- `POST /api/admin/tinymce-settings/import` - Import setting
+
+### Document Conversion
+- `POST /api/document/convert` - Convert document to HTML
+- `GET /api/document/formats` - Get supported formats
+- `GET /api/document/health` - Check service health
+
+## Testing
+
+A comprehensive test suite is available in `/test-suite/comprehensive-tests.js` using Playwright.
+
+To run tests:
+```bash
+cd test-suite
+npm install playwright
+npx playwright install chromium
+node comprehensive-tests.js
+```
+
+## Production Deployment
+
+1. Build frontend:
+```bash
+cd frontend
+npm run build
+```
+
+2. Set environment variables:
+```bash
+export NODE_ENV=production
+export JWT_SECRET=secure-random-key
+```
+
+3. Start backend:
+```bash
+cd backend
+npm start
+```
+
+4. Configure reverse proxy (nginx) to:
+   - Serve frontend build files
+   - Proxy `/api` requests to backend
 
 ## Security Considerations
 
-1. **Authentication**
-   - JWT tokens expire after 1 hour
-   - Passwords hashed with bcrypt (12 rounds)
-   - Token required for all admin operations
+1. **Environment Variables**: Never commit `.env` files
+2. **JWT Secret**: Use a strong, random secret in production
+3. **Database**: Use strong passwords and limit access
+4. **HTTPS**: Always use HTTPS in production
+5. **CORS**: Configure appropriate origins
+6. **File Uploads**: Validate file types and sizes
 
-2. **Database**
-   - Credentials stored outside webroot
-   - Parameterized queries prevent SQL injection
-   - UUID primary keys
+## Contributing
 
-3. **Middleware**
-   - CORS enabled
-   - JSON body parsing
-   - Protected routes require authentication
-
-## Troubleshooting
-
-### Backend won't start
-- Check PostgreSQL is running: `sudo systemctl status postgresql`
-- Verify database exists: `sudo -u postgres psql -l`
-- Check database credentials in `/var/www/config/database.json`
-
-### Can't login
-- Ensure backend is running on port 5001
-- Check browser console for errors
-- Verify credentials: admin / (130Bpm)
-
-### Frontend proxy errors
-- Backend must be running before frontend
-- Check backend logs for errors
-- Ensure ports 5001 (backend) and 5173 (frontend dev) are available
-
-## Future Enhancements
-
-1. **Photo Books**
-   - Gallery implementation
-   - Image upload functionality
-   - Album organization
-
-2. **Content Features**
-   - Rich text editor
-   - Media library
-   - SEO optimization
-   - Content versioning
-
-3. **User Features**
-   - Password reset
-   - Email notifications
-   - Activity logging
-   - Two-factor authentication
-
-## Additional Documentation
-
-- **[Playwright Testing](./playwright-testing.md)** - Automated test suite documentation
-- **[Pagebreak Feature Status](./pagebreak-feature-status.md)** - Current status of pagebreak functionality
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Run tests
+5. Submit a pull request
 
 ## Recent Updates
 
-### TinyMCE Integration
-- Rich text editor has been integrated for all content types
-- Pagebreak functionality allows splitting content into multiple pages
-- Visual indicators show pagebreaks in the editor
+### Cover Image Feature (Latest)
+- Added `coverImageUrl` field to content models (Articles, Photo Books)
+- Implemented image upload functionality with Multer
+- Created `/api/upload/image` endpoint for file uploads
+- Added UI components for cover image upload and URL input
+- Updated public frontend to display full-size cover images
+- Fixed image path issues between frontend (port 5173) and backend (port 5001)
+- Cover images display between title and content on article/photobook detail pages
 
-### Playwright Test Suite
-- Comprehensive automated tests created in `/var/www/playwright-tests/`
-- Tests cover authentication, content management, and navigation
-- Pagebreak viewing functionality verified working
+### Public Frontend
+- Integrated into React frontend on port 5173
+- Displays published articles and photo books  
+- Full-size cover image support
+- Static file serving for uploaded images
+- Responsive design with clean layout
+- Template-based home page with 2/3 - 1/3 layout
 
-### JWT Authentication Update
-- JWT tokens now persist without expiration for admin sessions
-- Token configuration updated to remove timeout
+## License
+
+[Your License Here]
+
+## Support
+
+For issues and questions, please use the GitHub issue tracker.
