@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Simple TinyMCE Image Test</title>
+    <script src="/tinymce/tinymce.min.js"></script>
+    <style>
+        body { padding: 20px; }
+        .status { margin: 10px 0; padding: 10px; background: #f0f0f0; }
+        button { margin: 5px; padding: 10px; }
+    </style>
+</head>
+<body>
+    <h1>Simple TinyMCE Image Test</h1>
+    
+    <div>
+        <h2>Direct Image (should display):</h2>
+        <img src="/media/odt_image_image_0a681fb6.jpeg" style="max-width: 300px;" alt="Test">
+    </div>
+    
+    <div>
+        <h2>TinyMCE Editor:</h2>
+        <textarea id="editor"></textarea>
+        <div class="status" id="status"></div>
+    </div>
+    
+    <div>
+        <button onclick="insertSimpleImage()">Insert Simple Image</button>
+        <button onclick="checkContent()">Check Content</button>
+        <button onclick="setHtmlContent()">Set HTML with Image</button>
+    </div>
+
+    <script>
+        // Initialize TinyMCE with minimal config
+        tinymce.init({
+            selector: '#editor',
+            height: 300,
+            menubar: false,
+            plugins: 'image code',
+            toolbar: 'undo redo | image | code'
+        });
+        
+        function updateStatus(message) {
+            document.getElementById('status').textContent = message;
+        }
+        
+        function insertSimpleImage() {
+            const editor = tinymce.get('editor');
+            if (editor) {
+                // Try inserting a simple image
+                editor.insertContent('<img src="/media/odt_image_image_0a681fb6.jpeg" alt="Test Image" style="max-width: 100%;">');
+                updateStatus('Inserted image with relative URL');
+            }
+        }
+        
+        function checkContent() {
+            const editor = tinymce.get('editor');
+            if (editor) {
+                const content = editor.getContent();
+                const images = editor.getBody().getElementsByTagName('img');
+                updateStatus(`Content length: ${content.length}, Images: ${images.length}`);
+                console.log('Editor content:', content);
+                console.log('Images:', images);
+            }
+        }
+        
+        function setHtmlContent() {
+            const editor = tinymce.get('editor');
+            if (editor) {
+                const html = '<p>Test content</p><img src="/media/odt_image_image_0a681fb6.jpeg" alt="Test" style="max-width: 400px;"><p>After image</p>';
+                editor.setContent(html);
+                updateStatus('Set HTML content with image');
+                
+                // Check after delay
+                setTimeout(() => {
+                    const images = editor.getBody().getElementsByTagName('img');
+                    console.log('Images after setContent:', images.length);
+                    for (let img of images) {
+                        console.log('Image src:', img.src, 'Complete:', img.complete);
+                    }
+                }, 1000);
+            }
+        }
+        
+        // Check when editor is ready
+        setTimeout(() => {
+            const editor = tinymce.get('editor');
+            if (editor) {
+                console.log('TinyMCE ready, version:', tinymce.majorVersion + '.' + tinymce.minorVersion);
+            }
+        }, 2000);
+    </script>
+</body>
+</html>

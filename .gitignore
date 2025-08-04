@@ -1,4 +1,4 @@
-dist/
+# dist/ # Commented out to allow committing production build
 .env
 .env.local
 *.log

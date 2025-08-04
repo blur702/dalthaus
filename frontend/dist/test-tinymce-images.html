@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>TinyMCE Image Test</title>
+    <script src="https://cdn.tiny.cloud/1/no-api-key/tinymce/6/tinymce.min.js"></script>
+    <style>
+        body { padding: 20px; font-family: Arial, sans-serif; }
+        .test-section { margin: 20px 0; padding: 20px; border: 1px solid #ddd; }
+        button { margin: 5px; padding: 10px; }
+        .status { margin: 10px 0; padding: 10px; background: #f0f0f0; }
+    </style>
+</head>
+<body>
+    <h1>TinyMCE Image Display Test</h1>
+    
+    <div class="test-section">
+        <h2>Test 1: Direct Image Display</h2>
+        <p>This image should display:</p>
+        <img src="/media/odt_image_image_0a681fb6.jpeg" style="max-width: 300px;" alt="Test Image">
+    </div>
+    
+    <div class="test-section">
+        <h2>Test 2: TinyMCE Editor</h2>
+        <textarea id="editor"></textarea>
+        <div class="status" id="status"></div>
+        
+        <h3>Actions:</h3>
+        <button onclick="insertImageRelative()">Insert Image (Relative URL)</button>
+        <button onclick="insertImageAbsolute()">Insert Image (Absolute URL)</button>
+        <button onclick="insertImageData()">Insert Image (Data URL)</button>
+        <button onclick="getContent()">Get Editor Content</button>
+        <button onclick="checkImages()">Check Images in Editor</button>
+    </div>
+    
+    <div class="test-section">
+        <h2>Test 3: Sample HTML with Images</h2>
+        <button onclick="loadSampleContent()">Load Sample Content with Images</button>
+    </div>
+
+    <script>
+        // Initialize TinyMCE
+        tinymce.init({
+            selector: '#editor',
+            height: 400,
+            plugins: 'image code',
+            toolbar: 'undo redo | image | code',
+            relative_urls: false,
+            remove_script_host: false,
+            convert_urls: false,
+            document_base_url: window.location.origin + '/',
+            content_style: 'img { max-width: 100%; height: auto; }',
+            readonly: false,
+            menubar: false,
+            branding: false,
+            setup: function(editor) {
+                editor.on('init', function() {
+                    console.log('TinyMCE initialized successfully');
+                });
+            }
+        });
+        
+        function updateStatus(message) {
+            document.getElementById('status').innerHTML = `<strong>${new Date().toLocaleTimeString()}:</strong> ${message}`;
+        }
+        
+        function insertImageRelative() {
+            const editor = tinymce.get('editor');
+            editor.insertContent('<img src="/media/odt_image_image_0a681fb6.jpeg" alt="Relative URL Image">');
+            updateStatus('Inserted image with relative URL');
+        }
+        
+        function insertImageAbsolute() {
+            const editor = tinymce.get('editor');
+            editor.insertContent('<img src="http://localhost:5173/media/odt_image_image_0a681fb6.jpeg" alt="Absolute URL Image">');
+            updateStatus('Inserted image with absolute URL');
+        }
+        
+        async function insertImageData() {
+            try {
+                // Fetch image and convert to data URL
+                const response = await fetch('/media/odt_image_image_4418177b.jpeg');
+                const blob = await response.blob();
+                const reader = new FileReader();
+                
+                reader.onloadend = function() {
+                    const editor = tinymce.get('editor');
+                    editor.insertContent(`<img src="${reader.result}" alt="Data URL Image" style="max-width: 200px;">`);
+                    updateStatus('Inserted image as data URL');
+                };
+                
+                reader.readAsDataURL(blob);
+            } catch (error) {
+                updateStatus('Error converting to data URL: ' + error.message);
+            }
+        }
+        
+        function getContent() {
+            const editor = tinymce.get('editor');
+            const content = editor.getContent();
+            updateStatus('Content: <pre>' + content.replace(/</g, '&lt;').replace(/>/g, '&gt;') + '</pre>');
+        }
+        
+        function checkImages() {
+            const editor = tinymce.get('editor');
+            const body = editor.getBody();
+            const images = body.getElementsByTagName('img');
+            
+            let report = `Found ${images.length} images:<br>`;
+            for (let i = 0; i < images.length; i++) {
+                const img = images[i];
+                report += `<br>Image ${i + 1}:`;
+                report += `<br>- URL: ${img.src}`;
+                report += `<br>- Displayed: ${img.offsetWidth > 0 ? 'YES' : 'NO'}`;
+                report += `<br>- Size: ${img.offsetWidth}x${img.offsetHeight}`;
+                report += `<br>- Natural: ${img.naturalWidth}x${img.naturalHeight}`;
+                report += `<br>- Complete: ${img.complete}`;
+            }
+            
+            updateStatus(report);
+        }
+        
+        function loadSampleContent() {
+            const editor = tinymce.get('editor');
+            const sampleHTML = `
+                <h2>Document with Images</h2>
+                <p>This is a test document with multiple images.</p>
+                
+                <h3>Image 1: Relative URL</h3>
+                <img src="/media/odt_image_image_0a681fb6.jpeg" alt="Image 1" style="max-width: 400px;">
+                
+                <h3>Image 2: Absolute URL</h3>
+                <img src="http://localhost:5173/media/odt_image_image_4418177b.jpeg" alt="Image 2" style="max-width: 400px;">
+                
+                <p>Text after images.</p>
+            `;
+            
+            editor.setContent(sampleHTML);
+            updateStatus('Loaded sample content with images');
+            
+            // Check images after a delay
+            setTimeout(checkImages, 1000);
+        }
+    </script>
+</body>
+</html>
