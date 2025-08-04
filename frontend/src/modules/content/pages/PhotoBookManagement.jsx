@@ -32,9 +32,11 @@ import PublicIcon from '@mui/icons-material/Public';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import ImageIcon from '@mui/icons-material/Image';
+import ReorderIcon from '@mui/icons-material/Reorder';
 import AdminLayout from '../../../components/AdminLayout';
 import ContentEditor from '../components/ContentEditor';
 import { photoBookService } from '../services/contentService';
+import { useNavigate } from 'react-router-dom';
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   fontWeight: 600,
@@ -68,6 +70,7 @@ const ThumbnailAvatar = styled(Avatar)(({ theme }) => ({
 }));
 
 const PhotoBookManagement = ({ setIsAuthenticated }) => {
+  const navigate = useNavigate();
   const [photoBooks, setPhotoBooks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -191,13 +194,23 @@ const PhotoBookManagement = ({ setIsAuthenticated }) => {
             <Typography variant="h4" component="h2">
               Photo Book Management
             </Typography>
-            <Button
-              variant="contained"
-              startIcon={<AddIcon />}
-              onClick={handleCreate}
-            >
-              Create New Photo Book
-            </Button>
+            <Stack direction="row" spacing={2}>
+              <Button
+                variant="contained"
+                startIcon={<AddIcon />}
+                onClick={handleCreate}
+              >
+                Create New Photo Book
+              </Button>
+              <Button
+                variant="outlined"
+                color="primary"
+                startIcon={<ReorderIcon />}
+                onClick={() => navigate('/admin/photo-books/order')}
+              >
+                Reorder Photo Books
+              </Button>
+            </Stack>
           </Stack>
 
           {error && (

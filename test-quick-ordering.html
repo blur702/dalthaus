@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Quick Ordering Test</title>
+</head>
+<body>
+    <h1>Quick Ordering Functionality Test</h1>
+    <p>This page tests the ordering functionality.</p>
+    
+    <h2>Steps to test:</h2>
+    <ol>
+        <li>Open browser to <a href="http://localhost:5173/login" target="_blank">http://localhost:5173/login</a></li>
+        <li>Login with username: admin, password: (130Bpm)</li>
+        <li>Navigate to Articles or Photo Books management</li>
+        <li>Click the "Reorder Articles" or "Reorder Photo Books" button</li>
+        <li>Drag items to reorder them</li>
+        <li>Click "Save Order" when done</li>
+        <li>Go back to the management page and verify the order is saved</li>
+        <li>Check the public pages to see if the order is reflected</li>
+    </ol>
+    
+    <h2>Test Links:</h2>
+    <ul>
+        <li><a href="http://localhost:5173/admin/content/articles" target="_blank">Articles Management</a></li>
+        <li><a href="http://localhost:5173/admin/articles/order" target="_blank">Order Articles</a></li>
+        <li><a href="http://localhost:5173/admin/content/photo-books" target="_blank">Photo Books Management</a></li>
+        <li><a href="http://localhost:5173/admin/photo-books/order" target="_blank">Order Photo Books</a></li>
+        <li><a href="http://localhost:5173/articles" target="_blank">Public Articles Page</a></li>
+        <li><a href="http://localhost:5173/photobooks" target="_blank">Public Photo Books Page</a></li>
+    </ul>
+    
+    <h2>Features Implemented:</h2>
+    <ul>
+        <li>✅ Database field: orderIndex added to all content</li>
+        <li>✅ Backend API: PUT /api/content/articles/order</li>
+        <li>✅ Backend API: PUT /api/content/photo-books/order</li>
+        <li>✅ Drag and drop interface using @dnd-kit library</li>
+        <li>✅ Save button only enabled when changes made</li>
+        <li>✅ Success/error notifications</li>
+        <li>✅ Public pages respect the order</li>
+        <li>✅ Navigation buttons on management pages</li>
+    </ul>
+    
+    <script>
+        console.log('Ordering test page loaded. Use the links above to test the functionality.');
+    </script>
+</body>
+</html>

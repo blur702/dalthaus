@@ -140,6 +140,13 @@ const BaseContent = sequelize.define('BaseContent', {
   parentId: {
     type: DataTypes.UUID,
     allowNull: true
+  },
+  // Order index for sorting content in listings
+  orderIndex: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    defaultValue: 0,
+    comment: 'Order index for sorting content in listings'
   }
 }, {
   tableName: 'content',

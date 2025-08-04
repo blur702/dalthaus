@@ -30,9 +30,11 @@ import VisibilityIcon from '@mui/icons-material/Visibility';
 import PublicIcon from '@mui/icons-material/Public';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
+import ReorderIcon from '@mui/icons-material/Reorder';
 import AdminLayout from '../../../components/AdminLayout';
 import ContentEditor from '../components/ContentEditor';
 import { articleService } from '../services/contentService';
+import { useNavigate } from 'react-router-dom';
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   fontWeight: 600,
@@ -61,6 +63,7 @@ const NoContentBox = styled(Box)(({ theme }) => ({
 }));
 
 const ArticleManagement = ({ setIsAuthenticated }) => {
+  const navigate = useNavigate();
   const [articles, setArticles] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -184,13 +187,23 @@ const ArticleManagement = ({ setIsAuthenticated }) => {
             <Typography variant="h4" component="h2">
               Article Management
             </Typography>
-            <Button
-              variant="contained"
-              startIcon={<AddIcon />}
-              onClick={handleCreate}
-            >
-              Create New Article
-            </Button>
+            <Stack direction="row" spacing={2}>
+              <Button
+                variant="contained"
+                startIcon={<AddIcon />}
+                onClick={handleCreate}
+              >
+                Create New Article
+              </Button>
+              <Button
+                variant="outlined"
+                color="primary"
+                startIcon={<ReorderIcon />}
+                onClick={() => navigate('/admin/articles/order')}
+              >
+                Reorder Articles
+              </Button>
+            </Stack>
           </Stack>
 
           {error && (

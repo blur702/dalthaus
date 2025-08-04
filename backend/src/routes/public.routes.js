@@ -15,7 +15,7 @@ router.get('/articles', async (req, res) => {
 
     const { count, rows } = await Article.findAndCountAll({
       where: { status: 'published' },
-      order: [['publishedAt', 'DESC']],
+      order: [['orderIndex', 'ASC'], ['publishedAt', 'DESC']],
       limit: parseInt(limit),
       offset: parseInt(offset),
       attributes: ['id', 'title', 'slug', 'body', 'featuredImage', 'featuredImageAlt', 'featuredImageCaption', 'featuredImageCredit', 'teaserImage', 'teaserImageAlt', 'summary', 'publishedAt', 'metadata']
@@ -113,7 +113,7 @@ router.get('/photobooks', async (req, res) => {
 
     const { count, rows } = await PhotoBook.findAndCountAll({
       where: { status: 'published' },
-      order: [['publishedAt', 'DESC']],
+      order: [['orderIndex', 'ASC'], ['publishedAt', 'DESC']],
       limit: parseInt(limit),
       offset: parseInt(offset),
       attributes: ['id', 'title', 'slug', 'body', 'featuredImage', 'featuredImageAlt', 'featuredImageCaption', 'featuredImageCredit', 'teaserImage', 'teaserImageAlt', 'summary', 'publishedAt', 'metadata']

@@ -45,6 +45,8 @@ app.use(cors());
 app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 // Serve lightbox images
 app.use('/uploads/lightbox', express.static(path.join(__dirname, '../uploads/lightbox')));
+// Serve TinyMCE files from frontend
+app.use('/tinymce', express.static(path.join(__dirname, '../frontend/public/tinymce')));
 
 // API Routes - Auth (never blocked by maintenance)
 app.use('/api/auth', authRoutes);

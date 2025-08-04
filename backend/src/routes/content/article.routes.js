@@ -12,6 +12,7 @@ router.get('/:slug', articleController.getBySlug);
 // Protected routes (require authentication and admin role)
 router.use(protect, isAdmin);
 router.post('/', articleController.create);
+router.put('/order', articleController.updateOrder);
 router.put('/:id', articleController.update);
 router.delete('/:id', articleController.delete);
 

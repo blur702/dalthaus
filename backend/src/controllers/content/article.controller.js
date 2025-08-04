@@ -67,15 +67,17 @@ class ArticleController extends BaseContentController {
   }
 }
 
-// Create instance and export methods
+// Create instance and bind methods
 const articleController = new ArticleController();
 
+// Bind all methods to preserve 'this' context
 module.exports = {
-  getAll: (req, res) => articleController.getAll(req, res),
-  getById: (req, res) => articleController.getById(req, res),
-  getBySlug: (req, res) => articleController.getBySlug(req, res),
-  create: (req, res) => articleController.create(req, res),
-  update: (req, res) => articleController.update(req, res),
-  delete: (req, res) => articleController.delete(req, res),
-  getByCategory: (req, res) => articleController.getByCategory(req, res)
+  getAll: articleController.getAll.bind(articleController),
+  getById: articleController.getById.bind(articleController),
+  getBySlug: articleController.getBySlug.bind(articleController),
+  create: articleController.create.bind(articleController),
+  update: articleController.update.bind(articleController),
+  delete: articleController.delete.bind(articleController),
+  getByCategory: articleController.getByCategory.bind(articleController),
+  updateOrder: articleController.updateOrder.bind(articleController)
 };

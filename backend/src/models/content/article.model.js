@@ -57,6 +57,16 @@ class Article {
       }
     });
   }
+
+  static async update(values, options = {}) {
+    return BaseContent.update(values, {
+      ...options,
+      where: {
+        ...options.where,
+        contentType: 'article'
+      }
+    });
+  }
 }
 
 module.exports = Article;

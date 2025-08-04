@@ -11,6 +11,7 @@ router.get('/:slug', photoBookController.getBySlug);
 // Protected routes (require authentication and admin role)
 router.use(protect, isAdmin);
 router.post('/', photoBookController.create);
+router.put('/order', photoBookController.updateOrder);
 router.put('/:id', photoBookController.update);
 router.delete('/:id', photoBookController.delete);
 

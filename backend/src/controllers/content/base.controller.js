@@ -31,7 +31,7 @@ class BaseContentController {
         where,
         limit: parseInt(limit),
         offset: parseInt(offset),
-        order: [['createdAt', 'DESC']],
+        order: [['orderIndex', 'ASC'], ['createdAt', 'DESC']],
         include: [{
           model: require('../../models/user.model'),
           as: 'author',
@@ -197,6 +197,32 @@ class BaseContentController {
       res.status(200).json(content);
     } catch (error) {
       console.error(`Get ${this.contentType} by slug error:`, error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  }
+
+  // Update order of content items
+  async updateOrder(req, res) {
+    try {
+      const { items } = req.body;
+      
+      if (!items || !Array.isArray(items)) {
+        return res.status(400).json({ error: 'Items array is required' });
+      }
+
+      // Update each item's orderIndex
+      const updatePromises = items.map((item, index) => {
+        return this.model.update(
+          { orderIndex: index },
+          { where: { id: item.id, contentType: this.contentType } }
+        );
+      });
+
+      await Promise.all(updatePromises);
+
+      res.status(200).json({ message: 'Order updated successfully' });
+    } catch (error) {
+      console.error(`Update ${this.contentType} order error:`, error);
       res.status(500).json({ error: 'Internal server error' });
     }
   }

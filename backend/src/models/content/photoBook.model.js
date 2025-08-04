@@ -57,6 +57,16 @@ class PhotoBook {
       }
     });
   }
+
+  static async update(values, options = {}) {
+    return BaseContent.update(values, {
+      ...options,
+      where: {
+        ...options.where,
+        contentType: 'photoBook'
+      }
+    });
+  }
 }
 
 module.exports = PhotoBook;

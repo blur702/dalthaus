@@ -7,6 +7,8 @@ import UserManagement from './modules/users/pages/UserManagement';
 import ArticleManagement from './modules/content/pages/ArticleManagement';
 import PageManagement from './modules/content/pages/PageManagement';
 import PhotoBookManagement from './modules/content/pages/PhotoBookManagement';
+import OrderArticles from './modules/articles/OrderArticles';
+import OrderPhotoBooks from './modules/photoBooks/OrderPhotoBooks';
 import TinymceSettings from './modules/settings/TinymceSettings';
 import Settings from './modules/settings/Settings';
 import GlobalSettings from './modules/settings/GlobalSettings';
@@ -132,6 +134,22 @@ function App() {
           element={
             <ProtectedRoute isAuthenticated={isAuthenticated}>
               <PhotoBookManagement setIsAuthenticated={setIsAuthenticated} />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/admin/photo-books/order" 
+          element={
+            <ProtectedRoute isAuthenticated={isAuthenticated}>
+              <OrderPhotoBooks setIsAuthenticated={setIsAuthenticated} />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/admin/articles/order" 
+          element={
+            <ProtectedRoute isAuthenticated={isAuthenticated}>
+              <OrderArticles setIsAuthenticated={setIsAuthenticated} />
             </ProtectedRoute>
           } 
         />

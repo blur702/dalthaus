@@ -30,14 +30,16 @@ class PhotoBookController extends BaseContentController {
   }
 }
 
-// Create instance and export methods
+// Create instance and bind methods
 const photoBookController = new PhotoBookController();
 
+// Bind all methods to preserve 'this' context
 module.exports = {
-  getAll: (req, res) => photoBookController.getAll(req, res),
-  getById: (req, res) => photoBookController.getById(req, res),
-  getBySlug: (req, res) => photoBookController.getBySlug(req, res),
-  create: (req, res) => photoBookController.create(req, res),
-  update: (req, res) => photoBookController.update(req, res),
-  delete: (req, res) => photoBookController.delete(req, res)
+  getAll: photoBookController.getAll.bind(photoBookController),
+  getById: photoBookController.getById.bind(photoBookController),
+  getBySlug: photoBookController.getBySlug.bind(photoBookController),
+  create: photoBookController.create.bind(photoBookController),
+  update: photoBookController.update.bind(photoBookController),
+  delete: photoBookController.delete.bind(photoBookController),
+  updateOrder: photoBookController.updateOrder.bind(photoBookController)
 };
