@@ -341,37 +341,17 @@ async function startServer() {
     // await seedTinymcePresets(); // Temporarily disabled due to foreign key issues
     await seedDefaultTemplates();
     
-    // For development, continue using the single port
-    if (process.env.NODE_ENV === 'development') {
-      app.listen(PORT, '0.0.0.0', () => {
-        console.log(`Development server running on port ${PORT}`);
-      });
-    } else {
-      // For production/shared hosting, set up HTTP and HTTPS servers
-      const httpServer = http.createServer(app);
-      
-      httpServer.listen(HTTP_PORT, '0.0.0.0', () => {
-        console.log(`HTTP server running on port ${HTTP_PORT}`);
-      });
-
-      if (USE_HTTPS) {
-        try {
-          const httpsOptions = {
-            key: fs.readFileSync(path.join(__dirname, 'ssl/key.pem')),
-            cert: fs.readFileSync(path.join(__dirname, 'ssl/cert.pem'))
-          };
-          
-          const httpsServer = https.createServer(httpsOptions, app);
-          
-          httpsServer.listen(HTTPS_PORT, '0.0.0.0', () => {
-            console.log(`HTTPS server running on port ${HTTPS_PORT}`);
-          });
-        } catch (error) {
-          console.error('Failed to start HTTPS server:', error);
-          console.log('Continuing with HTTP only');
-        }
+    // Use single port for both development and production
+    // This avoids requiring root privileges for ports 80/443
+    app.listen(PORT, '0.0.0.0', () => {
+      const mode = process.env.NODE_ENV || 'development';
+      console.log(`${mode.charAt(0).toUpperCase() + mode.slice(1)} server running on port ${PORT}`);
+      console.log(`API available at: http://localhost:${PORT}/api`);
+      if (process.env.NODE_ENV === 'production') {
+        console.log('Frontend served from: /frontend/dist');
+        console.log('Use a reverse proxy (nginx/apache) for HTTPS in production');
       }
-    }
+    });
   } catch (error) {
     console.error('Failed to start server:', error);
     process.exit(1);
