@@ -26,12 +26,17 @@ mv public_html_new public_html
 
 ### 2. Database Setup
 ```bash
-# Create PostgreSQL database and user
+# Database credentials for production:
+# Database Name: dalthaus_website
+# Username: dalthaus_w3bs1te
+# Password: {N3v3r3nd1ng}
+
+# If database doesn't exist, create it:
 sudo -u postgres psql
 
-CREATE DATABASE cms_production;
-CREATE USER cms_user WITH PASSWORD 'your-secure-password';
-GRANT ALL PRIVILEGES ON DATABASE cms_production TO cms_user;
+CREATE DATABASE dalthaus_website;
+CREATE USER dalthaus_w3bs1te WITH PASSWORD '{N3v3r3nd1ng}';
+GRANT ALL PRIVILEGES ON DATABASE dalthaus_website TO dalthaus_w3bs1te;
 \q
 ```
 
@@ -120,9 +125,9 @@ NODE_ENV=production
 PORT=5001
 JWT_SECRET=<generate-secure-random-string>
 DB_HOST=localhost
-DB_NAME=cms_production
-DB_USER=cms_user
-DB_PASSWORD=<your-database-password>
+DB_NAME=dalthaus_website
+DB_USER=dalthaus_w3bs1te
+DB_PASSWORD={N3v3r3nd1ng}
 FRONTEND_URL=https://yourdomain.com
 ```
 
@@ -217,10 +222,10 @@ htop
 ### Database Backup
 ```bash
 # Create backup
-pg_dump -U cms_user cms_production > backup_$(date +%Y%m%d).sql
+pg_dump -U dalthaus_w3bs1te dalthaus_website > backup_$(date +%Y%m%d).sql
 
 # Restore backup
-psql -U cms_user cms_production < backup_20240101.sql
+psql -U dalthaus_w3bs1te dalthaus_website < backup_20240101.sql
 ```
 
 ### File Backup
