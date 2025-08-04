@@ -135,4 +135,43 @@ router.delete('/image/:filename', protect, async (req, res) => {
   }
 });
 
+// Lightbox image upload endpoint
+router.post('/lightbox', protect, upload.single('image'), async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ error: 'No image file provided' });
+    }
+
+    // Create lightbox directory if it doesn't exist
+    const lightboxDir = path.join(__dirname, '../../../uploads/lightbox');
+    await fs.mkdir(lightboxDir, { recursive: true });
+
+    // Generate unique filename for lightbox image
+    const ext = path.extname(req.file.originalname);
+    const filename = `lightbox-${Date.now()}-${Math.round(Math.random() * 1E9)}${ext}`;
+    
+    // Move file from temp location to lightbox directory
+    const tempPath = req.file.path;
+    const newPath = path.join(lightboxDir, filename);
+    
+    // Use fs.promises for async operation
+    await fs.rename(tempPath, newPath);
+
+    // Return the URL for the lightbox image
+    const imageUrl = `/uploads/lightbox/${filename}`;
+
+    res.json({
+      success: true,
+      imageUrl: imageUrl,
+      filename: filename,
+      originalName: req.file.originalname,
+      size: req.file.size
+    });
+
+  } catch (error) {
+    console.error('Lightbox upload error:', error);
+    res.status(500).json({ error: 'Failed to upload lightbox image' });
+  }
+});
+
 module.exports = router;

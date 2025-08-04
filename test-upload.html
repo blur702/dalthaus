@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Upload Test</title>
+</head>
+<body>
+    <h1>Image Upload Test</h1>
+    
+    <h2>Regular Upload</h2>
+    <input type="file" id="regularFile" accept="image/*">
+    <button onclick="testRegularUpload()">Test Regular Upload</button>
+    
+    <h2>Lightbox Upload</h2>
+    <input type="file" id="lightboxFile" accept="image/*">
+    <button onclick="testLightboxUpload()">Test Lightbox Upload</button>
+    
+    <div id="result"></div>
+    
+    <script>
+        const token = localStorage.getItem('token');
+        const resultDiv = document.getElementById('result');
+        
+        function log(message, isError = false) {
+            const p = document.createElement('p');
+            p.textContent = new Date().toISOString() + ': ' + message;
+            p.style.color = isError ? 'red' : 'green';
+            resultDiv.appendChild(p);
+            console.log(message);
+        }
+        
+        async function testRegularUpload() {
+            const fileInput = document.getElementById('regularFile');
+            const file = fileInput.files[0];
+            
+            if (!file) {
+                log('No file selected', true);
+                return;
+            }
+            
+            log('Starting regular upload...');
+            
+            const formData = new FormData();
+            formData.append('image', file);
+            
+            try {
+                const response = await fetch('/api/upload/image', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': token ? `Bearer ${token}` : ''
+                    },
+                    body: formData
+                });
+                
+                log(`Response status: ${response.status}`);
+                
+                const data = await response.json();
+                log('Response data: ' + JSON.stringify(data));
+                
+                if (data.url || data.imageUrl) {
+                    log('Success! Image URL: ' + (data.url || data.imageUrl));
+                } else {
+                    log('No URL in response', true);
+                }
+                
+            } catch (error) {
+                log('Error: ' + error.message, true);
+                console.error(error);
+            }
+        }
+        
+        async function testLightboxUpload() {
+            const fileInput = document.getElementById('lightboxFile');
+            const file = fileInput.files[0];
+            
+            if (!file) {
+                log('No file selected', true);
+                return;
+            }
+            
+            log('Starting lightbox upload...');
+            
+            const formData = new FormData();
+            formData.append('image', file);
+            
+            try {
+                const response = await fetch('/api/upload/lightbox', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': token ? `Bearer ${token}` : ''
+                    },
+                    body: formData
+                });
+                
+                log(`Response status: ${response.status}`);
+                
+                const data = await response.json();
+                log('Response data: ' + JSON.stringify(data));
+                
+                if (data.imageUrl) {
+                    log('Success! Lightbox URL: ' + data.imageUrl);
+                } else {
+                    log('No URL in response', true);
+                }
+                
+            } catch (error) {
+                log('Error: ' + error.message, true);
+                console.error(error);
+            }
+        }
+        
+        // Check token on load
+        if (!token) {
+            log('No auth token found. Please login first.', true);
+        } else {
+            log('Auth token found: ' + token.substring(0, 20) + '...');
+        }
+    </script>
+</body>
+</html>

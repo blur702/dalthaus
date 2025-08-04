@@ -7,8 +7,8 @@ const configCache = new Map();
 // Default configuration fallback
 const DEFAULT_CONFIG = {
   license_key: 'gpl', // Use GPL license
-  toolbar: 'undo redo | blocks | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image | removeformat | pagebreak | help',
-  plugins: 'link image lists pagebreak help preview searchreplace wordcount visualblocks visualchars code fullscreen insertdatetime media table emoticons',
+  toolbar: 'undo redo | blocks | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image lightboximage | removeformat | pagebreak | help',
+  plugins: 'link image lists pagebreak lightboximage help preview searchreplace wordcount visualblocks visualchars code fullscreen insertdatetime media table emoticons',
   menubar: true,
   statusbar: true,
   branding: false,
@@ -89,9 +89,24 @@ export function useTinymceConfig(profileId = null, options = {}) {
           compiledConfig.plugins = `${compiledConfig.plugins} pagebreak`;
         }
 
+        // Always ensure lightboximage plugin is included
+        if (!compiledConfig.plugins.includes('lightboximage')) {
+          compiledConfig.plugins = `${compiledConfig.plugins} lightboximage`;
+        }
+
         // Ensure pagebreak is in toolbar if not already there
         if (!compiledConfig.toolbar.includes('pagebreak')) {
           compiledConfig.toolbar = `${compiledConfig.toolbar} | pagebreak`;
+        }
+
+        // Ensure lightboximage is in toolbar if not already there
+        if (!compiledConfig.toolbar.includes('lightboximage')) {
+          // Add lightboximage after image button
+          if (compiledConfig.toolbar.includes('image')) {
+            compiledConfig.toolbar = compiledConfig.toolbar.replace('image', 'image lightboximage');
+          } else {
+            compiledConfig.toolbar = `${compiledConfig.toolbar} | lightboximage`;
+          }
         }
 
         // Add pagebreak configuration

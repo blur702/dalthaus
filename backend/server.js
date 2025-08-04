@@ -43,6 +43,8 @@ app.use(cors());
 
 // Serve uploaded images statically
 app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
+// Serve lightbox images
+app.use('/uploads/lightbox', express.static(path.join(__dirname, '../uploads/lightbox')));
 
 // API Routes - Auth (never blocked by maintenance)
 app.use('/api/auth', authRoutes);

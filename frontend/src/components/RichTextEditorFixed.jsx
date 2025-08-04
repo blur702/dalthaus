@@ -1,7 +1,6 @@
 import React, { useRef, useEffect, useMemo } from 'react';
 import { Editor } from '@tinymce/tinymce-react';
 import useTinymceConfig from '../hooks/useTinymceConfig';
-import { initLightboxPlugin } from '../utils/tinymceLightboxPlugin';
 
 // Import TinyMCE so we can use it locally
 import tinymce from 'tinymce/tinymce';
@@ -131,12 +130,12 @@ const RichTextEditor = ({
     plugins: [
       'advlist', 'autolink', 'lists', 'link', 'image', 'charmap', 'preview',
       'anchor', 'searchreplace', 'visualblocks', 'code', 'fullscreen',
-      'insertdatetime', 'media', 'table', 'wordcount', 'pagebreak', 'lightboximage'
+      'insertdatetime', 'media', 'table', 'wordcount', 'pagebreak'
     ],
     toolbar: 'undo redo | blocks | ' +
       'bold italic forecolor | alignleft aligncenter ' +
       'alignright alignjustify | bullist numlist outdent indent | ' +
-      'link image insertwithlightbox lightboximage media | pagebreak | removeformat | code',
+      'link image media | pagebreak | removeformat | code',
     pagebreak_separator: '<!-- pagebreak -->',
     pagebreak_split_block: true,
     relative_urls: false,
@@ -210,17 +209,7 @@ const RichTextEditor = ({
       '*': 'display,width,height,margin,position,user-select,background,left,right,top,transform,padding,border,border-radius,color,font-size,font-weight,font-family'
     },
     setup: (editor) => {
-      // Initialize lightbox plugin BEFORE editor init
-      try {
-        if (typeof tinymce !== 'undefined' && tinymce.PluginManager) {
-          initLightboxPlugin(tinymce);
-        }
-      } catch (e) {
-        console.warn('Could not initialize lightbox plugin:', e);
-      }
-      
       editor.on('init', () => {
-        
         // Add pagebreak styles
         const style = editor.dom.create('style');
         style.innerHTML = `

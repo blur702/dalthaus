@@ -1,9 +1,13 @@
 import React, { useState, useEffect, useRef } from 'react';
+import LightboxViewer from './LightboxViewer';
 
 const ContentViewer = ({ content, showPagination = true }) => {
   const [pages, setPages] = useState([]);
   const [currentPage, setCurrentPage] = useState(0);
   const [isTransitioning, setIsTransitioning] = useState(false);
+  const [lightboxOpen, setLightboxOpen] = useState(false);
+  const [lightboxImages, setLightboxImages] = useState([]);
+  const [lightboxIndex, setLightboxIndex] = useState(0);
   const contentRef = useRef(null);
 
   useEffect(() => {
@@ -61,6 +65,53 @@ const ContentViewer = ({ content, showPagination = true }) => {
       }
     }
   }, [content]);
+
+  // Set up lightbox click handlers
+  useEffect(() => {
+    if (!contentRef.current) return;
+
+    const handleImageClick = (e) => {
+      const clickedImg = e.target;
+      if (clickedImg.tagName === 'IMG' && clickedImg.dataset.lightbox) {
+        e.preventDefault();
+        
+        // Collect all images with lightbox data
+        const allImages = contentRef.current.querySelectorAll('img[data-lightbox]');
+        const images = Array.from(allImages).map((img, index) => ({
+          src: img.src,
+          lightbox: img.dataset.lightbox,
+          alt: img.alt,
+          index
+        }));
+        
+        // Find the index of clicked image
+        const clickedIndex = images.findIndex(img => img.src === clickedImg.src);
+        
+        setLightboxImages(images);
+        setLightboxIndex(clickedIndex >= 0 ? clickedIndex : 0);
+        setLightboxOpen(true);
+      }
+    };
+
+    // Add click event listener to content area
+    const contentDisplay = contentRef.current.querySelector('.content-display');
+    if (contentDisplay) {
+      contentDisplay.addEventListener('click', handleImageClick);
+      
+      // Add visual indicators to images with lightbox
+      const imagesWithLightbox = contentDisplay.querySelectorAll('img[data-lightbox]');
+      imagesWithLightbox.forEach(img => {
+        img.classList.add('lightbox-available');
+        img.style.cursor = 'pointer';
+      });
+    }
+
+    return () => {
+      if (contentDisplay) {
+        contentDisplay.removeEventListener('click', handleImageClick);
+      }
+    };
+  }, [pages, currentPage]);
 
   const animatePageChange = async (newPage) => {
     // Start fade out
@@ -177,6 +228,14 @@ const ContentViewer = ({ content, showPagination = true }) => {
           </button>
         </div>
       )}
+      
+      {/* Lightbox Viewer */}
+      <LightboxViewer
+        open={lightboxOpen}
+        onClose={() => setLightboxOpen(false)}
+        images={lightboxImages}
+        initialIndex={lightboxIndex}
+      />
     </div>
   );
 };

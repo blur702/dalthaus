@@ -37,8 +37,8 @@ const HeaderWrapper = styled(Box)(({ theme }) => ({
 
 const HeaderContentWrapper = styled(Box)(({ theme }) => ({
   width: '100%',
-  paddingTop: theme.spacing(5),
-  paddingBottom: theme.spacing(3),
+  paddingTop: theme.spacing(3),
+  paddingBottom: theme.spacing(2),
 }));
 
 const HeaderContainer = styled(Box)(({ theme }) => ({
@@ -49,23 +49,24 @@ const HeaderContainer = styled(Box)(({ theme }) => ({
 }));
 
 const SiteTitle = styled(Typography)({
-  fontFamily: 'Arimo, Arial, sans-serif',
+  fontFamily: 'Crimson Text, serif',
   color: '#404040',  // Darker grey with 8.46:1 contrast
   fontWeight: 700,
-  fontSize: '2.5rem',
-  letterSpacing: '0.05em',
+  fontSize: '2rem',
+  letterSpacing: '0.02em',
   textTransform: 'uppercase',
-  lineHeight: 1.15,
+  lineHeight: 1,
+  marginBottom: '0.25rem',
 });
 
 const SiteSubtitle = styled(Typography)({
-  fontFamily: 'Gelasio, Georgia, serif',
-  color: '#404040',  // Darker grey with 8.46:1 contrast
-  fontStyle: 'normal',
+  fontFamily: 'Crimson Text, serif',
+  color: '#666666',  // Lighter grey for subtle motto
+  fontStyle: 'italic',
   fontWeight: 400,
-  fontSize: '1.25rem',
-  textAlign: 'right',
+  fontSize: '0.875rem',
   lineHeight: 1.15,
+  letterSpacing: '0.01em',
 });
 
 
@@ -161,28 +162,30 @@ const HeaderTemplate = ({ navigation = [] }) => {
               width: '100%',
             }}
           >
-            {/* Left side - Title and Description */}
+            {/* Left side - Title and Motto stacked */}
             <Box
               sx={{
                 display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
+                flexDirection: 'column',
+                alignItems: 'flex-start',
                 flex: 1,
-                flexDirection: { xs: 'column', sm: 'row' },
-                gap: { xs: 2, sm: 0 },
-                paddingRight: 2,
               }}
             >
               <SafeHTML
-                html={settings.siteName || 'Site Name'}
+                html={settings.siteName || 'Photography Portfolio'}
                 component={SiteTitle}
-                sx={{ fontSize: { xs: '2rem', sm: '2.5rem' } }}
+                sx={{ fontSize: { xs: '1.75rem', sm: '2rem' } }}
               />
-              <SafeHTML
-                html={settings.siteDescription || 'Site Description'}
-                component={SiteSubtitle}
-                sx={{ fontSize: { xs: '1rem', sm: '1.25rem' } }}
-              />
+              {settings.siteDescription && (
+                <SafeHTML
+                  html={settings.siteDescription}
+                  component={SiteSubtitle}
+                  sx={{ 
+                    fontSize: { xs: '0.75rem', sm: '0.875rem' },
+                    marginTop: '-2px',
+                  }}
+                />
+              )}
             </Box>
             
             {/* Right side - Hamburger Menu (hidden on mobile, shown on desktop) */}
@@ -191,8 +194,8 @@ const HeaderTemplate = ({ navigation = [] }) => {
               edge="end"
               onClick={handleDrawerToggle}
               sx={{ 
-                mt: 1,
-                display: { xs: 'none', md: 'flex' }
+                display: { xs: 'none', md: 'flex' },
+                alignSelf: 'center',
               }}
             >
               <MenuIcon />
